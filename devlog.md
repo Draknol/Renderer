@@ -32,3 +32,25 @@ Next I'm planning to get to the stage of rendering a triangle and by extension, 
 Rendering of 2D geometry is now possible. I have tested triangles, squares and messed around with circles. Even at 10 million vertices my PC was still able to render at ~30fps which while I imagine that will decrease as I add more complexity I am definitely getting a feel for the efficiency of OpenGL. I have learnt about VAOs (Vertex Array Objects), which are very effectively the same as vertex arrays in sfml, VBOs (Vertex Buffer Objects), which allow batching vertices together to improve efficiency of sending information to the GPU, and touched on shaders, compiling a very simple vertex and fragment shader as a placeholder. Shaders were something I hadn't made use of in sfml so I am looking forward to gaining a better understanding of how they work. The tutorial also covers EBOs (Element Buffer Objects), which are arrays of indices that allow for reuse of vertices. I haven't implemented an EBO yet although they will likely be very useful once I get to more complex geometry.
 ### goal:
 Next I'll be making some more interesting shaders (the current ones are placeholders) and learning some GLSL.
+## Version 0.0.3
+### description:
+New shaders have been added and the vertices array now contains color data with rgb values.
+```c++
+float vertices[] = {
+//    x       y      z      r     g     b    
+    -0.5f,  -0.5f,  0.0f,  0.2f, 0.7f, 0.1f,
+    -0.25f, -0.25f, 0.0f,  0.9f, 0.3f, 0.4f,
+     0.5f,  -0.5f,  0.0f,  0.1f, 0.5f, 0.9f,
+     0.25f, -0.25f, 0.0f,  0.6f, 0.4f, 0.9f,
+     0.5f,   0.5f,  0.0f,  0.3f, 0.2f, 0.8f,
+     0.25f,  0.25f, 0.0f,  0.0f, 0.9f, 0.6f,
+    -0.5f,   0.5f,  0.0f,  0.8f, 0.1f, 0.7f,
+    -0.25f,  0.25f, 0.0f,  0.5f, 0.0f, 0.3f,
+    -0.5f,  -0.5f,  0.0f,  0.2f, 0.7f, 0.1f,
+    -0.25f, -0.25f, 0.0f,  0.9f, 0.3f, 0.4f
+};
+```
+Shaders are now also loaded from files which is much nicer to work with than editing a const char*. Since I was starting to have a fair amount of loose files I decided to make a shader folder for the shader files and a src folder for the cpp files. I also made a Shader class to handle the shader interactions more tidily. I'm thinking of doing something similar for verticies but I'll probably leave that until I am reading from .obj files.
+I did also learn about uniforms, which are effictivly global variables that are visable to all vertices as they are being processed, allowing for interesting effects like animating colors.
+### goal:
+My next feature will be support for textures which I don't imagine will take me too long as I already have a decent understanding of image files and texture coordinates work.

@@ -1,47 +1,31 @@
 #include <iostream>
-
 #include <windows.h>
+
 #include <GL/glew.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <GLFW/glfw3.h>
 
+#include <Shader.h>
+
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 800;
 
-const char* vertexShaderSource = (
-    "#version 330 core\n"
-    "layout (location = 0) in vec3 aPos;\n"
-    "void main()\n"
-    "{\n"
-    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-    "}\0"
-);
-
-const char* fragmentShaderSource = (
-    "#version 330 core\n"
-    "out vec4 FragColor;\n"
-    "void main()\n"
-    "{\n"
-    "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-    "}\0"
-);
+float vertices[] = {
+//    x       y      z      r     g     b    
+    -0.5f,  -0.5f,  0.0f,  0.2f, 0.7f, 0.1f,
+    -0.25f, -0.25f, 0.0f,  0.9f, 0.3f, 0.4f,
+     0.5f,  -0.5f,  0.0f,  0.1f, 0.5f, 0.9f,
+     0.25f, -0.25f, 0.0f,  0.6f, 0.4f, 0.9f,
+     0.5f,   0.5f,  0.0f,  0.3f, 0.2f, 0.8f,
+     0.25f,  0.25f, 0.0f,  0.0f, 0.9f, 0.6f,
+    -0.5f,   0.5f,  0.0f,  0.8f, 0.1f, 0.7f,
+    -0.25f,  0.25f, 0.0f,  0.5f, 0.0f, 0.3f,
+    -0.5f,  -0.5f,  0.0f,  0.2f, 0.7f, 0.1f,
+    -0.25f, -0.25f, 0.0f,  0.9f, 0.3f, 0.4f
+};
 
 void processInput(GLFWwindow *window);
-
-// Simple 2D geometry (square with a hole)
-float vertices[] = {
-    -0.5f, -0.5f, 0.0f,
-    -0.25f, -0.25f, 0.0f,
-    0.5f, -0.5f, 0.0f,
-    0.25f, -0.25f, 0.0f,
-    0.5f, 0.5f, 0.0f,
-    0.25f, 0.25f, 0.0f,
-    -0.5f, 0.5f, 0.0f,
-    -0.25f, 0.25f, 0.0f,
-    -0.5f, -0.5f, 0.0f,
-    -0.25f, -0.25f, 0.0f
-};
 
 // Callbacks
 void windowResized(GLFWwindow* window, int width, int height);
@@ -88,31 +72,8 @@ int main() {
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    // Create shaders
-    GLuint vertexShader;
-    GLuint fragmentShader;
-    vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-
-    // Compile shaders
-    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-    glCompileShader(vertexShader);
-    glCompileShader(fragmentShader);
-
-    // Create shader program
-    GLuint shaderProgram;
-    shaderProgram = glCreateProgram();
-
-    // Attach shaders to program
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
-
-    // Delete linked shaders
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
-
+    Shader shader("vertexShader.vert", "fragmentShader.frag");
+ 
     // Create and bind VAO
     GLuint VAO;
     glGenVertexArrays(1, &VAO);
@@ -122,25 +83,34 @@ int main() {
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    // Apply attributes to VBO
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    // Apply position attribute to VBO
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+
+    // Apply color attribute to VBO
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
     
     // Main loop
     while (!glfwWindowShouldClose(window)) {
 
+        // Input
         processInput(window);
 
+        // Clear color buffer
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glUseProgram(shaderProgram);
+        // Set shader program to use
+        shader.useProgram();
         
+        // Bind and draw VAO
         glBindVertexArray(VAO);
-
         glDrawArrays(GL_TRIANGLE_STRIP, 0, sizeof(vertices) / sizeof(float));
 
+        // Update window
         glfwSwapBuffers(window);
 
+        // Events
         glfwPollEvents();
     }
 
