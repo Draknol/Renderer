@@ -54,3 +54,12 @@ Shaders are now also loaded from files which is much nicer to work with than edi
 I did also learn about uniforms, which are effictivly global variables that are visable to all vertices as they are being processed, allowing for interesting effects like animating colors.
 ### goal:
 My next feature will be support for textures which I don't imagine will take me too long as I already have a decent understanding of image files and texture coordinates work.
+## Version 0.0.4
+### description:
+Textures are now supported, with texture coordinates stored in Vertex. I also moved Vertex to a class instead of a struct, which while I didn't necessarily need it for textures, I imagine it will make the code a lot tidier when Vertex is doing more.
+Textures are loaded using stb_image.h. Currently it only seems to work for texture sizes of powers of 2 (eg 512x512). I'm not sure if this is a bug in my code or a limitation of the way I've implemented it.
+I've also updated the cmake file to include glm, which contains math functionality for OpenGL. I will need this for rotating objects later.
+I also changed colors from being stored as 4 floats to a uint. This is to allow me to work with hex values which I'm more familiar with, instead of rgb percents. This also saves 12 bytes of memory per Vertex.
+I also updated the Shader class as there was a bug causing the shaders to not compile correctly sometimes, due to how I was reading them into the char*. Reading into an std::string and using .c_str() seemed to fix this.
+### goal:
+Next is transformations, which allow for motion and 3D. This will require vector and matrix operations which I have a lot of practice with. It will be interesting to apply some of my math to a programming project as I haven't needed to operate on matrices for a project before.

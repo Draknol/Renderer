@@ -1,5 +1,9 @@
 #include <Shader.h>
 
+#include <fstream>
+#include <sstream>
+#include <iostream>
+
 Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath) {
     GLuint vertex = loadVertexShader(vertexPath);
     GLuint fragment = loadFragmentShader(fragmentPath);
@@ -29,11 +33,12 @@ Shader::~Shader() {
 }
 
 GLuint Shader::loadVertexShader(const std::string& fileName) {
-    char* vertexCode;
+    std::string vertexCode;
     getShader(fileName, vertexCode);
+    const char* code = vertexCode.c_str();
 
     GLuint vertex = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertex, 1, &vertexCode, NULL);
+    glShaderSource(vertex, 1, &code, NULL);
     glCompileShader(vertex);
 
     // Check for errors
@@ -49,11 +54,12 @@ GLuint Shader::loadVertexShader(const std::string& fileName) {
 }
 
 GLuint Shader::loadFragmentShader(const std::string& fileName) {
-    char* fragmentCode;
+    std::string fragmentCode;
     getShader(fileName, fragmentCode);
+    const char* code = fragmentCode.c_str();
 
     GLuint fragment = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragment, 1, &fragmentCode, NULL);
+    glShaderSource(fragment, 1, &code, NULL);
     glCompileShader(fragment);
 
     // Check for errors
@@ -68,28 +74,22 @@ GLuint Shader::loadFragmentShader(const std::string& fileName) {
     return fragment;
 }
 
-void Shader::getShader(const std::string& fileName, char*& shaderCode) {
-    std::ifstream file(SHADER_PATH + fileName, std::ios::binary | std::ios::ate);
-    
-    // Check for errors
+void Shader::getShader(const std::string& fileName, std::string& shaderCode) {
+    std::ifstream file(SHADER_PATH + fileName);
     if (!file.is_open()) {
         std::cout << "ERROR::SHADER::FILE_OPEN_FAILED\n";
-        shaderCode = nullptr;
         return;
     }
 
-    // Get end position, move to begining
-    std::streamsize size = file.tellg();
-    file.seekg(0, std::ios::beg);
-
-    // Read file
-    shaderCode = new char[size];
-    if (!file.read(shaderCode, size)) {
-        std::cout << "ERROR::SHADER::FILE_READ_FAILED\n";
-        delete[] shaderCode;
-    }
+    std::stringstream buffer;
+    buffer << file.rdbuf();
+    shaderCode = buffer.str();
 }
 
 void Shader::useProgram() {
     glUseProgram(ID);
+}
+
+GLuint Shader::getID() {
+    return ID;
 }

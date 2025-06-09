@@ -6,29 +6,31 @@
 #include <GL/glu.h>
 #include <GLFW/glfw3.h>
 
+#include <Vertex.h>
 #include <Shader.h>
+#include <Texture.h>
 
-const int SCREEN_WIDTH = 800;
-const int SCREEN_HEIGHT = 800;
+const GLsizei SCREEN_WIDTH = 800;
+const GLsizei SCREEN_HEIGHT = 800;
 
-float vertices[] = {
-//    x       y      z      r     g     b    
-    -0.5f,  -0.5f,  0.0f,  0.2f, 0.7f, 0.1f,
-    -0.25f, -0.25f, 0.0f,  0.9f, 0.3f, 0.4f,
-     0.5f,  -0.5f,  0.0f,  0.1f, 0.5f, 0.9f,
-     0.25f, -0.25f, 0.0f,  0.6f, 0.4f, 0.9f,
-     0.5f,   0.5f,  0.0f,  0.3f, 0.2f, 0.8f,
-     0.25f,  0.25f, 0.0f,  0.0f, 0.9f, 0.6f,
-    -0.5f,   0.5f,  0.0f,  0.8f, 0.1f, 0.7f,
-    -0.25f,  0.25f, 0.0f,  0.5f, 0.0f, 0.3f,
-    -0.5f,  -0.5f,  0.0f,  0.2f, 0.7f, 0.1f,
-    -0.25f, -0.25f, 0.0f,  0.9f, 0.3f, 0.4f
+Vertex vertices[] = {
+//      x       y      z       abgr      s      t
+    { -0.5f,  -0.5f,  0.0f, 0xFF1AB333, 0.0f,  0.0f  },
+    { -0.25f, -0.25f, 0.0f, 0xFF664DE6, 0.25f, 0.25f },
+    {  0.5f,  -0.5f,  0.0f, 0xFFE6801A, 1.0f,  0.0f  },
+    {  0.25f, -0.25f, 0.0f, 0xFFE66699, 0.75f, 0.25f },
+    {  0.5f,   0.5f,  0.0f, 0xFFCC334D, 1.0f,  1.0f  },
+    {  0.25f,  0.25f, 0.0f, 0xFF99E600, 0.75f, 0.75f },
+    { -0.5f,   0.5f,  0.0f, 0xFFB31ACC, 0.0f,  1.0f  },
+    { -0.25f,  0.25f, 0.0f, 0xFF4D0080, 0.25f, 0.75f },
+    { -0.5f,  -0.5f,  0.0f, 0xFF1AB333, 0.0f,  0.0f  },
+    { -0.25f, -0.25f, 0.0f, 0xFF664DE6, 0.25f, 0.25f }
 };
 
 void processInput(GLFWwindow *window);
 
 // Callbacks
-void windowResized(GLFWwindow* window, int width, int height);
+void windowResized(GLFWwindow* window, GLsizei width, GLsizei height);
 
 int main() {
 
@@ -72,7 +74,11 @@ int main() {
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
+    // Create Shader
     Shader shader("vertexShader.vert", "fragmentShader.frag");
+
+    // Load texture
+    Texture texture("wall.jpg");
  
     // Create and bind VAO
     GLuint VAO;
@@ -84,13 +90,17 @@ int main() {
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     // Apply position attribute to VBO
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), Vertex::offsetPos());
     glEnableVertexAttribArray(0);
 
     // Apply color attribute to VBO
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glVertexAttribPointer(1, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), Vertex::offsetColor());
     glEnableVertexAttribArray(1);
-    
+
+    // Apply texture coordinates attribute to VBO
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), Vertex::offsetTextCoord());
+    glEnableVertexAttribArray(2);
+
     // Main loop
     while (!glfwWindowShouldClose(window)) {
 
@@ -104,8 +114,7 @@ int main() {
         shader.useProgram();
         
         // Bind and draw VAO
-        glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLE_STRIP, 0, sizeof(vertices) / sizeof(float));
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, sizeof(vertices) / sizeof(Vertex));
 
         // Update window
         glfwSwapBuffers(window);
@@ -126,7 +135,7 @@ void processInput(GLFWwindow *window) {
     }
 }
 
-void windowResized(GLFWwindow* window, int width, int height) {
+void windowResized(GLFWwindow* window, GLsizei width, GLsizei height) {
     // Recreate viewport
     glViewport(0, 0, width, height);
 }
