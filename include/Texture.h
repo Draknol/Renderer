@@ -26,10 +26,11 @@ public:
     void loadTexture(const std::string& fileName);
 
     /// @brief Tells OpenGL to use this texture
-    /// (inds this texture to GL_TEXTURE0)
+    /// (binds this texture to GL_TEXTURE0)
     void useTexture();
 
-    GLuint getID();
+    /// @brief Gets texture ID from glGenTextures
+    GLuint getID() { return ID; }
 };
 
 #endif

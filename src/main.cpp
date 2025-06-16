@@ -1,33 +1,59 @@
-#include <iostream>
-#include <windows.h>
-
 #include <GL/glew.h>
-#include <GL/gl.h>
-#include <GL/glu.h>
 #include <GLFW/glfw3.h>
+#include <glm/trigonometric.hpp>
 
-#include <Vertex.h>
+#include <VertexArray.h>
 #include <Shader.h>
 #include <Texture.h>
+
+#include <iostream>
 
 const GLsizei SCREEN_WIDTH = 800;
 const GLsizei SCREEN_HEIGHT = 800;
 
 Vertex vertices[] = {
-//      x       y      z       abgr      s      t
-    { -0.5f,  -0.5f,  0.0f, 0xFF1AB333, 0.0f,  0.0f  },
-    { -0.25f, -0.25f, 0.0f, 0xFF664DE6, 0.25f, 0.25f },
-    {  0.5f,  -0.5f,  0.0f, 0xFFE6801A, 1.0f,  0.0f  },
-    {  0.25f, -0.25f, 0.0f, 0xFFE66699, 0.75f, 0.25f },
-    {  0.5f,   0.5f,  0.0f, 0xFFCC334D, 1.0f,  1.0f  },
-    {  0.25f,  0.25f, 0.0f, 0xFF99E600, 0.75f, 0.75f },
-    { -0.5f,   0.5f,  0.0f, 0xFFB31ACC, 0.0f,  1.0f  },
-    { -0.25f,  0.25f, 0.0f, 0xFF4D0080, 0.25f, 0.75f },
-    { -0.5f,  -0.5f,  0.0f, 0xFF1AB333, 0.0f,  0.0f  },
-    { -0.25f, -0.25f, 0.0f, 0xFF664DE6, 0.25f, 0.25f }
+//      x      y      z       rgba      s     t
+    { -0.5f, -0.5f,  0.5f, 0xFFFFFFFF, 0.0f, 0.0f },
+    {  0.5f, -0.5f,  0.5f, 0xFFFFFFFF, 1.0f, 0.0f },
+    {  0.5f,  0.5f,  0.5f, 0xFFFFFFFF, 1.0f, 1.0f },
+    { -0.5f,  0.5f,  0.5f, 0xFFFFFFFF, 0.0f, 1.0f },
+
+    {  0.5f, -0.5f, -0.5f, 0xFFFFFFFF, 0.0f, 0.0f },
+    { -0.5f, -0.5f, -0.5f, 0xFFFFFFFF, 1.0f, 0.0f },
+    { -0.5f,  0.5f, -0.5f, 0xFFFFFFFF, 1.0f, 1.0f },
+    {  0.5f,  0.5f, -0.5f, 0xFFFFFFFF, 0.0f, 1.0f },
+
+    { -0.5f, -0.5f, -0.5f, 0xFFFFFFFF, 0.0f, 0.0f },
+    { -0.5f, -0.5f,  0.5f, 0xFFFFFFFF, 1.0f, 0.0f },
+    { -0.5f,  0.5f,  0.5f, 0xFFFFFFFF, 1.0f, 1.0f },
+    { -0.5f,  0.5f, -0.5f, 0xFFFFFFFF, 0.0f, 1.0f },
+
+    {  0.5f, -0.5f,  0.5f, 0xFFFFFFFF, 0.0f, 0.0f },
+    {  0.5f, -0.5f, -0.5f, 0xFFFFFFFF, 1.0f, 0.0f },
+    {  0.5f,  0.5f, -0.5f, 0xFFFFFFFF, 1.0f, 1.0f },
+    {  0.5f,  0.5f,  0.5f, 0xFFFFFFFF, 0.0f, 1.0f },
+
+    { -0.5f,  0.5f,  0.5f, 0xFFFFFFFF, 0.0f, 0.0f },
+    {  0.5f,  0.5f,  0.5f, 0xFFFFFFFF, 1.0f, 0.0f },
+    {  0.5f,  0.5f, -0.5f, 0xFFFFFFFF, 1.0f, 1.0f },
+    { -0.5f,  0.5f, -0.5f, 0xFFFFFFFF, 0.0f, 1.0f },
+
+    { -0.5f, -0.5f, -0.5f, 0xFFFFFFFF, 0.0f, 0.0f },
+    {  0.5f, -0.5f, -0.5f, 0xFFFFFFFF, 1.0f, 0.0f },
+    {  0.5f, -0.5f,  0.5f, 0xFFFFFFFF, 1.0f, 1.0f },
+    { -0.5f, -0.5f,  0.5f, 0xFFFFFFFF, 0.0f, 1.0f },
 };
 
-void processInput(GLFWwindow *window);
+GLuint indices[] = {
+     0,  1,  2,  0,  2,  3,
+     4,  5,  6,  4,  6,  7,
+     8,  9, 10,  8, 10, 11,
+    12, 13, 14, 12, 14, 15,
+    16, 17, 18, 18, 19, 16,
+    20, 21, 22, 22, 23, 20,
+};
+
+void processInput(GLFWwindow *window);  
 
 // Callbacks
 void windowResized(GLFWwindow* window, GLsizei width, GLsizei height);
@@ -47,7 +73,7 @@ int main() {
 
     // Check window was created
     if (!window) {
-        std::cout << "Failed to create window\n";
+        std::cout << "ERROR::WINDOW::CREATION_FAILED\n";
         glfwTerminate();
         return -1;
     }
@@ -68,56 +94,78 @@ int main() {
     // Set clear color
     glClearColor(0.5f, 0.65f, 0.85f, 1.0f);
 
-    // Create and bind VBO
-    GLuint VBO;
-    glGenBuffers(1, &VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    // Create VertexArray
+    VertexArray vertexArray(vertices, sizeof(vertices), indices, sizeof(indices));
 
     // Create Shader
     Shader shader("vertexShader.vert", "fragmentShader.frag");
+    shader.useProgram();
 
     // Load texture
-    Texture texture("wall.jpg");
- 
-    // Create and bind VAO
-    GLuint VAO;
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
+    Texture texture("wall.jpg"); // Texture is from learnopengl.com
+
+    // Enable depth testing
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
     
-    // Copy array to buffer
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    // Apply position attribute to VBO
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), Vertex::offsetPos());
-    glEnableVertexAttribArray(0);
-
-    // Apply color attribute to VBO
-    glVertexAttribPointer(1, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), Vertex::offsetColor());
-    glEnableVertexAttribArray(1);
-
-    // Apply texture coordinates attribute to VBO
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), Vertex::offsetTextCoord());
-    glEnableVertexAttribArray(2);
+    GLfloat lastFrame = glfwGetTime();
+    GLfloat frameTime = 0;
+    GLint FPS = 0;
 
     // Main loop
     while (!glfwWindowShouldClose(window)) {
+
+        GLfloat currentFrame = glfwGetTime();
+        GLfloat deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
 
         // Input
         processInput(window);
 
         // Clear color buffer
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Set shader program to use
         shader.useProgram();
+
+        glm::vec3 cubePositions[] = {
+            glm::vec3( 0.0f,  0.0f,  0.0f  ), 
+            glm::vec3( 2.0f,  5.0f, -15.0f ), 
+            glm::vec3(-1.5f, -2.2f, -2.5f  ),  
+            glm::vec3(-3.8f, -2.0f, -12.3f ),  
+            glm::vec3( 2.4f, -0.4f, -3.5f  ),  
+            glm::vec3(-1.7f,  3.0f, -7.5f  ),  
+            glm::vec3( 1.3f, -2.0f, -2.5f  ),  
+            glm::vec3( 1.5f,  2.0f, -2.5f  ), 
+            glm::vec3( 1.5f,  0.2f, -1.5f  ), 
+            glm::vec3(-1.3f,  1.0f, -1.5f  ),
+        };
         
-        // Bind and draw VAO
-        glDrawArrays(GL_TRIANGLE_STRIP, 0, sizeof(vertices) / sizeof(Vertex));
+        for (size_t j = 0; j < 10 / 10; j++)
+        {
+            for(unsigned int i = 0; i < 10; i++) {
+            float angle = (90.0f * currentFrame) + (20.0f * i);
+
+            vertexArray.resetTransform();
+            vertexArray.translate(cubePositions[i]);
+            vertexArray.rotate(glm::radians(angle), glm::vec3(1.0f, 0.5f, 0.5f));
+
+            vertexArray.draw(window);
+        }
+        }
 
         // Update window
         glfwSwapBuffers(window);
+
+        frameTime += deltaTime;
+        FPS++;
+        if (frameTime >= 1) {
+            std::cout << "FPS: " << FPS << std::endl;
+            frameTime = 0;
+            FPS = 0;
+        }
 
         // Events
         glfwPollEvents();

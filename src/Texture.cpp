@@ -19,6 +19,8 @@ void Texture::loadTexture(const std::string& fileName) {
     int width, height, nrChannels;
     stbi_set_flip_vertically_on_load(true);
     GLubyte *data = stbi_load(fileName.c_str(), &width, &height, &nrChannels, 0);
+    
+    // Check for load errors
     if (!data) std::cout << "ERROR::TEXTURE::LOAD_FAILED";
 
     // Create and bind texture
@@ -36,8 +38,4 @@ void Texture::loadTexture(const std::string& fileName) {
 void Texture::useTexture() {
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, ID);
-}
-
-GLuint Texture::getID() {
-    return ID;
 }

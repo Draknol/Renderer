@@ -2,6 +2,7 @@
 #define SHADER_H
 
 #include <GL/glew.h>
+#include <glm/mat4x4.hpp>
   
 #include <string>
 
@@ -29,18 +30,20 @@ public:
 
     /// @brief Load a vertex shader from a file
     /// @param fileName Path to the vertex shader relative to the SHADER_PATH
+    /// @param shaderType GLenum for type of shader (eg Gl_VERTEX_SHADER)
     /// @return Shader ID from glCreateShader
-    GLuint loadVertexShader(const std::string& fileName);
-
-    /// @brief Load a fragment shader from a file
-    /// @param fileName Path to the fragment shader relative to the SHADER_PATH
-    /// @return Shader ID from glCreateShader
-    GLuint loadFragmentShader(const std::string& fileName);
+    GLuint loadShader(const std::string& fileName, GLenum shaderType);
 
     /// @brief Tells OpenGL to use this shader 
     void useProgram();
 
-    GLuint getID();
+    /// @brief Gets program ID from glCreateProgram 
+    GLuint getID() { return ID; }
+
+    /// @brief Set a 4x4 matrix uniform (call useProgram first)
+    /// @param name uniform name
+    /// @param matrix matrix value to set
+    void setMat4(const char* name, const glm::mat4& matrix);
 };
 
 #endif
