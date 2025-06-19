@@ -98,7 +98,7 @@ int main() {
         GLfloat deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
-        window.processInput();
+        window.processInput(deltaTime);
 
         // Clear color buffer
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -118,6 +118,8 @@ int main() {
             glm::vec3( 1.5f,  0.2f, -1.5f  ), 
             glm::vec3(-1.3f,  1.0f, -1.5f  ),
         };
+
+        window.updateView();
         
         for(unsigned int i = 0; i < 10; i++) {
             float angle = (90.0f * currentFrame) + (20.0f * i);

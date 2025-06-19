@@ -90,3 +90,7 @@ In the end I found it wasn't due to my code but just that drawing lots of object
 Increasing the vertex count of each cube instead of drawing more objects I could get a much higher vertex count in real time (3 million verts at ~45fps). This was reassuring as it means once I can read meshes in from files I should be able to render some decently high poly models. I also noticed that the CPU was spending a lot of time finding out what the current shader program was and the location of the uniform for transform. Changing this so the locations are stored and only updated when the program is changed massively reduced CPU usage when drawing lots of vertices to practically 0 (which makes sense since the almost entire load should be on the GPU).
 ### goal:
 As I still haven't added it, a camera is still next on my list
+## Version 0.1.2
+### description:
+
+### goal:

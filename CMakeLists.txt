@@ -4,7 +4,7 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-project(renderer VERSION 0.1.1)
+project(renderer VERSION 0.1.2)
 
 find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)

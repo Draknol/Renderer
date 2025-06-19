@@ -14,6 +14,8 @@ private:
     GLint currentProgram;
     GLint transformLocation;
     GLsizei width, height;
+
+    glm::vec2 lastMousePosition;
 public:
 
     /// @brief Create and initialise a window
@@ -25,7 +27,7 @@ public:
     void draw(VertexArray& vertexArray);
 
     /// @brief Process inputs
-    void processInput();
+    void processInput(float deltaTime);
 
     /// @brief Change which shader program is in use
     /// @param ID Program ID
@@ -38,10 +40,15 @@ public:
     /// @brief Display the current frame
     void update();
 
+    void updateView();
+
 protected:
 
     /// @brief Callback for resizing the window and updating the view
     static void windowResized(GLFWwindow* window, GLsizei width, GLsizei height);
+
+    /// @brief Callback for moving the mouse to update the view
+    static void mouseMoved(GLFWwindow* window, double xpos, double ypos);
 };
 
 #endif
