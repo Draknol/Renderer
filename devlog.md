@@ -81,3 +81,12 @@ In `Vertex.h` I decided to change the `GLfloats` and `GLuint` to use `glm` inste
 Back face culling is now also enabled, and after adjusting the winding order of a few triangles only the outside of the cubes render.
 ### goal:
 I'm hoping to get both a camera and window class working next, along with potentially support for instancing meshes.
+## Version 0.1.1
+### description:
+There are now `Window` and `View` classes. This a smaller change, not really adding anything functionally.
+The `Window` class handles the GLFWwindow and the drawing of VertexArrays, while `View` is mostly empty for now but will have more when I add a proper camera.
+I also wasn't super happy with only 20k cubes (240k vertices) at 60fps so I ran a profiler on the code.
+In the end I found it wasn't due to my code but just that drawing lots of objects separately is inefficient.
+Increasing the vertex count of each cube instead of drawing more objects I could get a much higher vertex count in real time (3 million verts at ~45fps). This was reassuring as it means once I can read meshes in from files I should be able to render some decently high poly models. I also noticed that the CPU was spending a lot of time finding out what the current shader program was and the location of the uniform for transform. Changing this so the locations are stored and only updated when the program is changed massively reduced CPU usage when drawing lots of vertices to practically 0 (which makes sense since the almost entire load should be on the GPU).
+### goal:
+As I still haven't added it, a camera is still next on my list

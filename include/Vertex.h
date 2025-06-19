@@ -1,4 +1,5 @@
 #ifndef VERTEX_H
+#define VERTEX_H
 
 #include <gl/glew.h>
 #include <glm/vec2.hpp>

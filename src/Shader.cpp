@@ -63,10 +63,6 @@ GLuint Shader::loadShader(const std::string& fileName, GLenum shaderType) {
     return shader;
 }
 
-void Shader::useProgram() {
-    glUseProgram(ID);
-}
-
 void Shader::setMat4(const char* name, const glm::mat4& matrix) {
     GLuint location = glGetUniformLocation(ID, name);
 

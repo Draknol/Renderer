@@ -1,10 +1,8 @@
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
-#include <glm/trigonometric.hpp>
-
-#include <VertexArray.h>
+#include <Window.h>
 #include <Shader.h>
 #include <Texture.h>
+
+#include <glm/trigonometric.hpp>
 
 #include <iostream>
 
@@ -53,11 +51,6 @@ GLuint indices[] = {
     20, 21, 22, 22, 23, 20,
 };
 
-void processInput(GLFWwindow *window);  
-
-// Callbacks
-void windowResized(GLFWwindow* window, GLsizei width, GLsizei height);
-
 int main() {
 
     // Initialise glfw
@@ -68,28 +61,12 @@ int main() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    // Create window
-    GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Renderer", NULL, NULL);
+    Window window(SCREEN_WIDTH, SCREEN_HEIGHT);
 
-    // Check window was created
-    if (!window) {
-        std::cout << "ERROR::WINDOW::CREATION_FAILED\n";
-        glfwTerminate();
-        return -1;
-    }
-
-    // Set window as main window
-    glfwMakeContextCurrent(window);
     glewInit();
 
     // Disable VSync
     glfwSwapInterval(0);
-
-    // Create a viewport
-    glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-
-    // Set function to be called on size change
-    glfwSetFramebufferSizeCallback(window, windowResized);
 
     // Set clear color
     glClearColor(0.5f, 0.65f, 0.85f, 1.0f);
@@ -99,7 +76,7 @@ int main() {
 
     // Create Shader
     Shader shader("vertexShader.vert", "fragmentShader.frag");
-    shader.useProgram();
+    window.useProgram(shader.getID());
 
     // Load texture
     Texture texture("wall.jpg"); // Texture is from learnopengl.com
@@ -109,26 +86,25 @@ int main() {
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
     
-
+    // FPS
     GLfloat lastFrame = glfwGetTime();
     GLfloat frameTime = 0;
     GLint FPS = 0;
 
     // Main loop
-    while (!glfwWindowShouldClose(window)) {
+    while (!window.shouldClose()) {
 
         GLfloat currentFrame = glfwGetTime();
         GLfloat deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
-        // Input
-        processInput(window);
+        window.processInput();
 
         // Clear color buffer
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Set shader program to use
-        shader.useProgram();
+        window.useProgram(shader.getID());
 
         glm::vec3 cubePositions[] = {
             glm::vec3( 0.0f,  0.0f,  0.0f  ), 
@@ -143,21 +119,17 @@ int main() {
             glm::vec3(-1.3f,  1.0f, -1.5f  ),
         };
         
-        for (size_t j = 0; j < 10 / 10; j++)
-        {
-            for(unsigned int i = 0; i < 10; i++) {
+        for(unsigned int i = 0; i < 10; i++) {
             float angle = (90.0f * currentFrame) + (20.0f * i);
 
             vertexArray.resetTransform();
             vertexArray.translate(cubePositions[i]);
             vertexArray.rotate(glm::radians(angle), glm::vec3(1.0f, 0.5f, 0.5f));
 
-            vertexArray.draw(window);
-        }
+            window.draw(vertexArray);
         }
 
-        // Update window
-        glfwSwapBuffers(window);
+        window.update();
 
         frameTime += deltaTime;
         FPS++;
@@ -174,16 +146,4 @@ int main() {
     // Exit
     glfwTerminate();
     return 0;
-}
-
-void processInput(GLFWwindow *window) {
-    // Escape
-    if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-        glfwSetWindowShouldClose(window, true);
-    }
-}
-
-void windowResized(GLFWwindow* window, GLsizei width, GLsizei height) {
-    // Recreate viewport
-    glViewport(0, 0, width, height);
 }

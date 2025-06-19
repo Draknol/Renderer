@@ -53,37 +53,3 @@ void VertexArray::translate(const glm::vec3& offset) {
 void VertexArray::resetTransform() {
     worldTransform = DEFAULT_TRANSFORM;
 }
-
-void VertexArray::draw(GLFWwindow* window) {
-
-    // Bind VAO
-    glBindVertexArray(VAO);
-
-    // Update transform uniform
-    GLint currentProgram = 0;
-    glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
-    GLuint location = glGetUniformLocation(currentProgram, "transform");
-
-    // Check if get uniform failed
-    if (location == -1) {
-        std::cout << "ERROR::SHADER::GET_UNIFORM_FAILED (transform)\n";
-        return;
-    }
-
-    // Get screen size
-    int width, height;
-    glfwGetWindowSize(window, &width, &height);
-
-    // Temporary camera
-    glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 0.1f, 100.0f);
-    glm::mat4 view = glm::lookAt(glm::vec3(0.0f, 0.0f, 5.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-
-    // Update uniform
-    glUniformMatrix4fv(location, 1, GL_FALSE, &(projection * view * worldTransform)[0].x);
-    
-    // Draw vertices
-    glDrawElements(GL_TRIANGLES, vertexCount, GL_UNSIGNED_INT, 0);
-
-    // Unbind VAO
-    glBindVertexArray(0);
-}
