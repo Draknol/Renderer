@@ -1,8 +1,10 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
-#include <VertexArray.h>
+#include <Model.h>
 #include <View.h>
+
+#include <GLFW/glfw3.h>
 
 /// @brief Container for OpenGL's GLFWwindow
 class Window
@@ -22,9 +24,13 @@ public:
     Window(GLsizei width, GLsizei height);
     ~Window();
 
-    /// @brief Draw a VertexArray to screen (call update to display frame)
-    /// @param vertexArray VertexArray to draw
-    void draw(VertexArray& vertexArray);
+    /// @brief Draw a Mesh to screen (call update to display frame)
+    /// @param mesh Mesh to draw
+    void draw(const Mesh& mesh, Shader& shader);
+
+    /// @brief Draw a Model to screen (call update to display frame)
+    /// @param model Model to draw
+    void draw(const Model& model, Shader& shader);
 
     /// @brief Process inputs
     void processInput(float deltaTime);

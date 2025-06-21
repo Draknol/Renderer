@@ -9,48 +9,6 @@
 const GLsizei SCREEN_WIDTH = 800;
 const GLsizei SCREEN_HEIGHT = 800;
 
-Vertex vertices[] = {
-//      x      y      z       rgba      s     t
-    { -0.5f, -0.5f,  0.5f, 0xFFFFFFFF, 0.0f, 0.0f },
-    {  0.5f, -0.5f,  0.5f, 0xFFFFFFFF, 1.0f, 0.0f },
-    {  0.5f,  0.5f,  0.5f, 0xFFFFFFFF, 1.0f, 1.0f },
-    { -0.5f,  0.5f,  0.5f, 0xFFFFFFFF, 0.0f, 1.0f },
-
-    {  0.5f, -0.5f, -0.5f, 0xFFFFFFFF, 0.0f, 0.0f },
-    { -0.5f, -0.5f, -0.5f, 0xFFFFFFFF, 1.0f, 0.0f },
-    { -0.5f,  0.5f, -0.5f, 0xFFFFFFFF, 1.0f, 1.0f },
-    {  0.5f,  0.5f, -0.5f, 0xFFFFFFFF, 0.0f, 1.0f },
-
-    { -0.5f, -0.5f, -0.5f, 0xFFFFFFFF, 0.0f, 0.0f },
-    { -0.5f, -0.5f,  0.5f, 0xFFFFFFFF, 1.0f, 0.0f },
-    { -0.5f,  0.5f,  0.5f, 0xFFFFFFFF, 1.0f, 1.0f },
-    { -0.5f,  0.5f, -0.5f, 0xFFFFFFFF, 0.0f, 1.0f },
-
-    {  0.5f, -0.5f,  0.5f, 0xFFFFFFFF, 0.0f, 0.0f },
-    {  0.5f, -0.5f, -0.5f, 0xFFFFFFFF, 1.0f, 0.0f },
-    {  0.5f,  0.5f, -0.5f, 0xFFFFFFFF, 1.0f, 1.0f },
-    {  0.5f,  0.5f,  0.5f, 0xFFFFFFFF, 0.0f, 1.0f },
-
-    { -0.5f,  0.5f,  0.5f, 0xFFFFFFFF, 0.0f, 0.0f },
-    {  0.5f,  0.5f,  0.5f, 0xFFFFFFFF, 1.0f, 0.0f },
-    {  0.5f,  0.5f, -0.5f, 0xFFFFFFFF, 1.0f, 1.0f },
-    { -0.5f,  0.5f, -0.5f, 0xFFFFFFFF, 0.0f, 1.0f },
-
-    { -0.5f, -0.5f, -0.5f, 0xFFFFFFFF, 0.0f, 0.0f },
-    {  0.5f, -0.5f, -0.5f, 0xFFFFFFFF, 1.0f, 0.0f },
-    {  0.5f, -0.5f,  0.5f, 0xFFFFFFFF, 1.0f, 1.0f },
-    { -0.5f, -0.5f,  0.5f, 0xFFFFFFFF, 0.0f, 1.0f },
-};
-
-GLuint indices[] = {
-     0,  1,  2,  0,  2,  3,
-     4,  5,  6,  4,  6,  7,
-     8,  9, 10,  8, 10, 11,
-    12, 13, 14, 12, 14, 15,
-    16, 17, 18, 18, 19, 16,
-    20, 21, 22, 22, 23, 20,
-};
-
 int main() {
 
     // Initialise glfw
@@ -71,15 +29,13 @@ int main() {
     // Set clear color
     glClearColor(0.5f, 0.65f, 0.85f, 1.0f);
 
-    // Create VertexArray
-    VertexArray vertexArray(vertices, sizeof(vertices), indices, sizeof(indices));
+    // Load Model
+    Model model("Donut/Donut.obj");
 
     // Create Shader
     Shader shader("vertexShader.vert", "fragmentShader.frag");
     window.useProgram(shader.getID());
 
-    // Load texture
-    Texture texture("wall.jpg"); // Texture is from learnopengl.com
 
     // Enable depth testing
     glEnable(GL_DEPTH_TEST);
@@ -106,30 +62,9 @@ int main() {
         // Set shader program to use
         window.useProgram(shader.getID());
 
-        glm::vec3 cubePositions[] = {
-            glm::vec3( 0.0f,  0.0f,  0.0f  ), 
-            glm::vec3( 2.0f,  5.0f, -15.0f ), 
-            glm::vec3(-1.5f, -2.2f, -2.5f  ),  
-            glm::vec3(-3.8f, -2.0f, -12.3f ),  
-            glm::vec3( 2.4f, -0.4f, -3.5f  ),  
-            glm::vec3(-1.7f,  3.0f, -7.5f  ),  
-            glm::vec3( 1.3f, -2.0f, -2.5f  ),  
-            glm::vec3( 1.5f,  2.0f, -2.5f  ), 
-            glm::vec3( 1.5f,  0.2f, -1.5f  ), 
-            glm::vec3(-1.3f,  1.0f, -1.5f  ),
-        };
-
         window.updateView();
-        
-        for(unsigned int i = 0; i < 10; i++) {
-            float angle = (90.0f * currentFrame) + (20.0f * i);
 
-            vertexArray.resetTransform();
-            vertexArray.translate(cubePositions[i]);
-            vertexArray.rotate(glm::radians(angle), glm::vec3(1.0f, 0.5f, 0.5f));
-
-            window.draw(vertexArray);
-        }
+        window.draw(model, shader);
 
         window.update();
 

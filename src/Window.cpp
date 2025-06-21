@@ -35,19 +35,45 @@ Window::~Window() {
     glfwDestroyWindow(window);
 }
 
-void Window::draw(VertexArray& vertexArray) {
+void Window::draw(const Mesh& mesh, Shader& shader) {
+    GLsizei diffuseNr = 1;
+
+    for(GLsizei i = 0; i < mesh.getTextureCount(); i++) {
+        // Activate Ith texture
+        glActiveTexture(GL_TEXTURE0 + i);
+
+        // retrieve texture number (the N in diffuse_textureN)
+        std::string number;
+        std::string name = mesh.getTexture(i).getType();
+
+        // Diffuse
+        if(name == "texture_diffuse") {
+            number = std::to_string(diffuseNr++);
+        }
+
+        shader.setInt(("material." + name + number).c_str(), i);
+        glBindTexture(GL_TEXTURE_2D, mesh.getTexture(i).getID());
+    }
+
     // Bind VAO
-    glBindVertexArray(vertexArray.getVAO());
+    glBindVertexArray(mesh.getVAO());
     
     // Calculate transform
-    glm::mat4 transform = view.getProjView() * vertexArray.getWorldTransform();
+    glm::mat4 transform = view.getProjView();// * mesh.getWorldTransform();
     glUniformMatrix4fv(transformLocation, 1, GL_FALSE, &transform[0].x);
     
     // Draw vertices
-    glDrawElements(GL_TRIANGLES, vertexArray.getVertexCount(), GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, mesh.getVertexCount(), GL_UNSIGNED_INT, 0);
 
     // Unbind VAO
     glBindVertexArray(0);
+}
+
+void Window::draw(const Model& model, Shader& shader) {
+    for (GLsizei i = 0; i < model.getMeshCount(); i++) {
+        draw(model.getMesh(i), shader);
+    }
+    
 }
 
 void Window::windowResized(GLFWwindow* window, GLsizei width, GLsizei height) {

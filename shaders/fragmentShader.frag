@@ -1,11 +1,13 @@
 #version 330 core
-in vec4 vertexColor;
+
+struct Material {
+    sampler2D texture_diffuse1;
+};
+
+uniform Material material;
 in vec2 TexCoord;
-
-uniform sampler2D uTexture;
-
 out vec4 FragColor;
 
 void main() {
-    FragColor = texture(uTexture, TexCoord) * vertexColor;
+    FragColor = texture(material.texture_diffuse1, TexCoord);
 }

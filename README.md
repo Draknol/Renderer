@@ -12,9 +12,9 @@ My eventual goal is to implement features including a moveable camera, lighting,
 ## Compiling
 
 1. Install [CMake](https://cmake.org/download) (3.28 or later)
-2. Install dependencies: OpenGL, GLEW, GLFW3, and GLM
+2. Install dependencies: OpenGL, GLEW, GLFW3, GLM and assimp
 3. Clone the repository: `git clone https://github.com/Draknol/Renderer`
-4. Inside a build directory run: `cmake ..` (change `SHADER_PATH` and `TEXTURE_PATH` if build folder isn't a subfolder of ./Renderer)
+4. Inside a build directory run: `cmake ..` (Change `SHADER_PATH` and `MODEL_PATH` if not running from project root)
 5. To build: `cmake --build .`
 6. To run: ./renderer
 
@@ -25,7 +25,8 @@ My eventual goal is to implement features including a moveable camera, lighting,
 - Simple shaders
 - GLSL shader file loading
 - Texture loading (using stb_image.h)
-- 3D transformation with scaling, rotation, and translation
+- Model loading (using assimp)
+- ~~3D transformation with scaling, rotation, and translation~~ (currently disabled)
 - Back face culling
 - Support for EBOs
 - FPS counter

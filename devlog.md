@@ -92,5 +92,16 @@ Increasing the vertex count of each cube instead of drawing more objects I could
 As I still haven't added it, a camera is still next on my list
 ## Version 0.1.2
 ### description:
-
+A proper camera has now been added, with the ability to fly and look around. For now variables like fov and sensitivity are stored in the view class, which I would like to change eventually to make them easier to change.
+Using cross products to get left and right was also very interesting and not how I would've thought to do it.
+I've now also finished the "getting started" chapter and can now move on to more advanced features like lighting, model loading and maybe some PBR.
 ### goal:
+Next on the list is lighting but I would like to have a proper model to light first. Up until now I've needed to make meshes vertex by vertex which is very slow and I'm really looking forward to loading a proper model into my engine.
+## Version 0.1.3
+![Donut model](screenshots/Donut.png)
+### description:
+Models can now be loaded in from .obj files. I've added a donut model I made a while ago following a [BlenderGuru](https://www.youtube.com/@blenderguru) tutorial.
+Adding this broke a lot more things that any other previous addition.
+Due to `Textures` being copied during the loading process, when the old copy was deleted the texture would get unloaded, causing them to not display. My solution was to add a `GLuint*` shared between copies that keeps track of how many there are, only deleting the texture when the last `~Texture` is called. I also removed `VertexArray` as it has been fully replaced by `Mesh`. This does mean that transforms no longer work but I'm planning to fix this when I do instancing.
+### goal:
+My next goal is getting instancing working and hopefully fixing the transforms so I can get a few donuts spinning around.

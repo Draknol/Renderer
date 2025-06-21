@@ -8,8 +8,8 @@
 
 #ifndef SHADER_PATH
 // File path shaders are stored in relative to the build folder
-// "../shaders/" by default
-#define SHADER_PATH "../shaders/"
+// "shaders/" by default
+#define SHADER_PATH "shaders/"
 #endif
 
 /// @brief Container for OpenGL's shader program
@@ -44,6 +44,11 @@ public:
     /// @param name uniform name
     /// @param matrix matrix value to set
     void setMat4(const char* name, const glm::mat4& matrix);
+
+    /// @brief Set a int uniform (call useProgram first)
+    /// @param name uniform name
+    /// @param n int value to set
+    void setInt(const char* name, GLint n);
 };
 
 #endif

@@ -35,7 +35,7 @@ Shader::~Shader() {
 }
 
 GLuint Shader::loadShader(const std::string& fileName, GLenum shaderType) {
-    std::ifstream file(SHADER_PATH + fileName);
+    std::ifstream file(SHADER_PATH + std::string("/") + fileName);
 
     // Check if file failed to open
     if (!file.is_open()) {
@@ -76,4 +76,19 @@ void Shader::setMat4(const char* name, const glm::mat4& matrix) {
     }
 
     glUniformMatrix4fv(location, 1, GL_FALSE, &matrix[0].x);
+}
+
+void Shader::setInt(const char* name, GLint n) {
+    GLuint location = glGetUniformLocation(ID, name);
+
+    // Check if get uniform failed
+    GLint currentProgram = 0;
+    glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
+
+    if (currentProgram != ID || location == -1) {
+        std::cout << "ERROR::SHADER::GET_UNIFORM_FAILED (" << name << ")\n";
+        return;
+    }
+
+    glUniform1i(location, n);
 }

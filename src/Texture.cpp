@@ -5,12 +5,33 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
-Texture::Texture(const std::string& texturePath) {
-    loadTexture(TEXTURE_PATH + texturePath);
+Texture::Texture(const std::string& texturePath, const std::string& type)
+: path(texturePath), type(type), instanceCount(new GLuint(1)) {
+    loadTexture(texturePath);
+}
+
+Texture::Texture(const Texture& other)
+    : ID(other.ID), type(other.type), path(other.path), instanceCount(other.instanceCount) {
+    ++(*instanceCount);
+}
+
+Texture& Texture::operator=(const Texture& other) {
+    if (this != &other) {
+        ID = other.ID;
+        type = other.type;
+        path = other.path;
+        instanceCount = other.instanceCount;
+        (*instanceCount)++;
+    }
+    return *this;
 }
 
 Texture::~Texture() {
-    glDeleteTextures(1, &ID);
+    (*instanceCount)--;
+    if (instanceCount == 0) {
+        glDeleteTextures(1, &ID);
+        delete instanceCount;
+    }
 }
 
 void Texture::loadTexture(const std::string& fileName) {
@@ -21,12 +42,14 @@ void Texture::loadTexture(const std::string& fileName) {
     GLubyte *data = stbi_load(fileName.c_str(), &width, &height, &nrChannels, 0);
     
     // Check for load errors
-    if (!data) std::cout << "ERROR::TEXTURE::LOAD_FAILED";
+    if (!data) std::cout << "ERROR::TEXTURE::LOAD_FAILED (" << fileName << ")\n";
 
     // Create and bind texture
     glGenTextures(1, &ID);
     glBindTexture(GL_TEXTURE_2D, ID);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+    
+    GLenum format = (nrChannels == 4) ? GL_RGBA : GL_RGB;
+    glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
 
     // Make mipmap
     glGenerateMipmap(GL_TEXTURE_2D);
