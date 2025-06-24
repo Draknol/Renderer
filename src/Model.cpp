@@ -3,9 +3,12 @@
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 
+#include <glm/gtc/matrix_transform.hpp>
+
 #include <iostream>
 
-Model::Model(const std::string& fileName) {
+Model::Model(const std::string& fileName, GLuint instanceCount) 
+    : instanceTransforms(instanceCount, DEFAULT_TRANSFORM) {
     // Load scene
     std::string path = MODEL_PATH + std::string("/") + fileName;
     Assimp::Importer importer;
@@ -22,6 +25,38 @@ Model::Model(const std::string& fileName) {
 
     // Process nodes recursively
     processNode(scene->mRootNode, scene);
+
+    // Create and bind instanceVBO
+    glGenBuffers(1, &instanceVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+    glBufferData(GL_ARRAY_BUFFER, instanceCount * sizeof(glm::mat4), nullptr, GL_DYNAMIC_DRAW);
+
+    // Bind instanceVBO to meshes
+    for (Mesh& mesh : meshes) {
+        // Bind meshes VAO
+        glBindVertexArray(mesh.getVAO());
+
+        // Create as 4 vec4
+        for (GLuint i = 0; i < 4; i++) {
+            glVertexAttribPointer(3 + i, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(i * sizeof(glm::vec4)));
+            glEnableVertexAttribArray(3 + i);
+            glVertexAttribDivisor(3 + i, 1); // per instance instead of per vertex
+        }
+
+        // Unbind VAO
+        glBindVertexArray(0);
+    }
+    
+    // Unbind instanceVBO
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+void Model::updateTransforms() {
+    if (!transformsUpdated) return;
+    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, instanceTransforms.size() * sizeof(glm::mat4), instanceTransforms.data());
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    transformsUpdated = false;
 }
 
 void Model::processNode(aiNode* node, const aiScene* scene) {
@@ -102,4 +137,36 @@ std::vector<Texture> Model::loadMaterialTextures(aiMaterial *material, aiTexture
     }
 
     return textures;
+}
+
+void Model::scale(const glm::vec3& multiplier, GLint instance) {
+    if (instance == -1) localTransform = glm::scale(localTransform, multiplier);
+    else {
+        instanceTransforms.at(instance) = glm::scale(instanceTransforms.at(instance), multiplier);
+        transformsUpdated = true;
+    }
+}
+
+void Model::rotate(GLfloat angle, const glm::vec3& axis, GLint instance) {
+    if (instance == -1) localTransform = glm::rotate(localTransform, angle, axis);
+    else {
+        instanceTransforms.at(instance) = glm::rotate(instanceTransforms.at(instance), angle, axis);
+        transformsUpdated = true;
+    }
+}
+
+void Model::translate(const glm::vec3& offset, GLint instance) {
+    if (instance == -1) localTransform = glm::translate(localTransform, offset);
+    else {
+        instanceTransforms.at(instance) = glm::translate(instanceTransforms.at(instance), offset);
+        transformsUpdated = true;
+    }
+}
+
+void Model::resetTransform(GLint instance) {
+    if (instance == -1) localTransform = DEFAULT_TRANSFORM;
+    else {
+        instanceTransforms.at(instance) = DEFAULT_TRANSFORM;
+        transformsUpdated = true;
+    }
 }

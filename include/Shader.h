@@ -5,6 +5,7 @@
 #include <glm/mat4x4.hpp>
   
 #include <string>
+#include <unordered_map>
 
 #ifndef SHADER_PATH
 // File path shaders are stored in relative to the build folder
@@ -16,6 +17,7 @@
 class Shader {
 private:
     GLuint ID;
+    std::unordered_map<const char*, GLuint> locations;
 
     /// @brief Reads a shader file into a string
     /// @param fileName Path to the shader relative to the SHADER_PATH
@@ -35,10 +37,10 @@ public:
     GLuint loadShader(const std::string& fileName, GLenum shaderType);
 
     /// @brief Tells OpenGL to use this shader 
-    void useProgram();
+    void useProgram() const;
 
     /// @brief Gets program ID from glCreateProgram 
-    GLuint getID() { return ID; }
+    GLuint getID() const { return ID; }
 
     /// @brief Set a 4x4 matrix uniform (call useProgram first)
     /// @param name uniform name

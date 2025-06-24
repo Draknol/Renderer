@@ -105,3 +105,11 @@ Adding this broke a lot more things that any other previous addition.
 Due to `Textures` being copied during the loading process, when the old copy was deleted the texture would get unloaded, causing them to not display. My solution was to add a `GLuint*` shared between copies that keeps track of how many there are, only deleting the texture when the last `~Texture` is called. I also removed `VertexArray` as it has been fully replaced by `Mesh`. This does mean that transforms no longer work but I'm planning to fix this when I do instancing.
 ### goal:
 My next goal is getting instancing working and hopefully fixing the transforms so I can get a few donuts spinning around.
+## Version 0.2.0
+![Donut model](screenshots/1m%20Spinning%20Cubes.gif)
+### description:
+Models now support instancing. Instancing didn't have as big of an impact as I had hoped for the donut model, however I can now draw lots of smaller models (I tested with cubes). I am able to render 1 million spinning cubes at around 200fps. The idea of using something like this to make a voxel engine intrests me and is something I would like to have a go at in the future.
+Instances each have their own `worldTransform`, but also share a `localTransform`. This allows for making adjustments to all the models at the same time, which is both easier to work with and lighter on the CPU.
+I also added a cache to the `Shader` class to store uniform locations as the CPU was spending a lot of time asking for them. This reduced CPU usage (for 1m cubes) from 10% down to <1%.
+### goal:
+The next feature to add is Phong lighting.

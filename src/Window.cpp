@@ -1,5 +1,6 @@
 #include <Window.h>
 
+#include <GL/glew.h>
 #include <iostream>
 
 Window::Window(GLsizei width, GLsizei height)
@@ -35,45 +36,45 @@ Window::~Window() {
     glfwDestroyWindow(window);
 }
 
-void Window::draw(const Mesh& mesh, Shader& shader) {
-    GLsizei diffuseNr = 1;
+void Window::draw(Model& model, Shader& shader) {
+    for (GLsizei i = 0; i < model.getMeshCount(); i++) {
+        const Mesh& mesh = model.getMesh(i);
 
-    for(GLsizei i = 0; i < mesh.getTextureCount(); i++) {
-        // Activate Ith texture
-        glActiveTexture(GL_TEXTURE0 + i);
+        GLsizei diffuseNr = 1;
 
-        // retrieve texture number (the N in diffuse_textureN)
-        std::string number;
-        std::string name = mesh.getTexture(i).getType();
+        for(GLsizei i = 0; i < mesh.getTextureCount(); i++) {
+            // Activate Ith texture
+            glActiveTexture(GL_TEXTURE0 + i);
 
-        // Diffuse
-        if(name == "texture_diffuse") {
-            number = std::to_string(diffuseNr++);
+            // retrieve texture number (the N in diffuse_textureN)
+            std::string number;
+            std::string name = mesh.getTexture(i).getType();
+
+            // Diffuse
+            if(name == "texture_diffuse") {
+                number = std::to_string(diffuseNr++);
+            }
+
+            shader.setInt(("material." + name + number).c_str(), i);
+            glBindTexture(GL_TEXTURE_2D, mesh.getTexture(i).getID());
         }
 
-        shader.setInt(("material." + name + number).c_str(), i);
-        glBindTexture(GL_TEXTURE_2D, mesh.getTexture(i).getID());
+        // Bind VAO
+        glBindVertexArray(mesh.getVAO());
+
+        // Update transforms
+        model.updateTransforms();
+        
+        // Update uniforms
+        shader.setMat4("projView", view.getProjView());
+        shader.setMat4("localTransform", model.getLocalTransform());
+
+        // Draw vertices
+        glDrawElementsInstanced(GL_TRIANGLES, mesh.getVertexCount(), GL_UNSIGNED_INT, 0, model.getInstanceCount());
+
+        // Unbind VAO
+        glBindVertexArray(0);
     }
-
-    // Bind VAO
-    glBindVertexArray(mesh.getVAO());
-    
-    // Calculate transform
-    glm::mat4 transform = view.getProjView();// * mesh.getWorldTransform();
-    glUniformMatrix4fv(transformLocation, 1, GL_FALSE, &transform[0].x);
-    
-    // Draw vertices
-    glDrawElements(GL_TRIANGLES, mesh.getVertexCount(), GL_UNSIGNED_INT, 0);
-
-    // Unbind VAO
-    glBindVertexArray(0);
-}
-
-void Window::draw(const Model& model, Shader& shader) {
-    for (GLsizei i = 0; i < model.getMeshCount(); i++) {
-        draw(model.getMesh(i), shader);
-    }
-    
 }
 
 void Window::windowResized(GLFWwindow* window, GLsizei width, GLsizei height) {
@@ -109,14 +110,6 @@ void Window::useProgram(GLuint ID) {
 
     currentProgram = ID;
     glUseProgram(ID);
-
-    transformLocation = glGetUniformLocation(currentProgram, "transform");
-
-    // Check if get uniform failed
-    if (transformLocation == -1) {
-        std::cout << "ERROR::SHADER::GET_UNIFORM_FAILED (transform)\n";
-        return;
-    }
 }
 
 void Window::processInput(float deltaTime) {

@@ -1,7 +1,7 @@
 # Renderer
 A simple 3D renderer made using OpenGL
 
-![Spinning cubes preview](screenshots/Spinning%20Cubes.gif)
+![Spinning donuts preview](screenshots/Spinning%20Donuts.gif)
 
 ## Description
 
@@ -26,7 +26,8 @@ My eventual goal is to implement features including a moveable camera, lighting,
 - GLSL shader file loading
 - Texture loading (using stb_image.h)
 - Model loading (using assimp)
-- ~~3D transformation with scaling, rotation, and translation~~ (currently disabled)
+- Instancing support
+- 3D transformation with scaling, rotation, and translation
 - Back face culling
 - Support for EBOs
 - FPS counter

@@ -30,7 +30,8 @@ int main() {
     glClearColor(0.5f, 0.65f, 0.85f, 1.0f);
 
     // Load Model
-    Model model("Donut/Donut.obj");
+    Model model("Cube/Cube.obj", 1000000);
+    model.scale(glm::vec3(0.1f), -1);
 
     // Create Shader
     Shader shader("vertexShader.vert", "fragmentShader.frag");
@@ -46,6 +47,17 @@ int main() {
     GLfloat lastFrame = glfwGetTime();
     GLfloat frameTime = 0;
     GLint FPS = 0;
+
+    int counter = 0;
+    for (int x = 0; x < 100; ++x) {
+        for (int y = 0; y < 100; ++y) {
+            for (int z = 0; z < 100; ++z) {
+                model.translate(glm::vec3(0.4*x, 0.4*y, 0.4*z), counter);
+                model.rotate(glm::radians(3.6f * counter), glm::vec3(1.0f, 0.5f, 0.5f), counter);
+                counter++;
+            }
+        }
+    }
 
     // Main loop
     while (!window.shouldClose()) {
@@ -63,6 +75,8 @@ int main() {
         window.useProgram(shader.getID());
 
         window.updateView();
+        
+        model.rotate(glm::radians(90.0f * deltaTime), glm::vec3(1.0f, 0.5f, 0.5f), -1);
 
         window.draw(model, shader);
 

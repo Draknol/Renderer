@@ -14,7 +14,6 @@ private:
     View view;
 
     GLint currentProgram;
-    GLint transformLocation;
     GLsizei width, height;
 
     glm::vec2 lastMousePosition;
@@ -24,13 +23,9 @@ public:
     Window(GLsizei width, GLsizei height);
     ~Window();
 
-    /// @brief Draw a Mesh to screen (call update to display frame)
-    /// @param mesh Mesh to draw
-    void draw(const Mesh& mesh, Shader& shader);
-
     /// @brief Draw a Model to screen (call update to display frame)
     /// @param model Model to draw
-    void draw(const Model& model, Shader& shader);
+    void draw(Model& model, Shader& shader);
 
     /// @brief Process inputs
     void processInput(float deltaTime);

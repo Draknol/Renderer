@@ -64,13 +64,15 @@ GLuint Shader::loadShader(const std::string& fileName, GLenum shaderType) {
 }
 
 void Shader::setMat4(const char* name, const glm::mat4& matrix) {
-    GLuint location = glGetUniformLocation(ID, name);
+    // Cache location
+    if (!locations.count(name)) {
+        locations.insert_or_assign(name, glGetUniformLocation(ID, name));
+    }
+
+    GLuint location = locations.at(name);
 
     // Check if get uniform failed
-    GLint currentProgram = 0;
-    glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
-
-    if (currentProgram != ID || location == -1) {
+    if (location == -1) {
         std::cout << "ERROR::SHADER::GET_UNIFORM_FAILED (" << name << ")\n";
         return;
     }
@@ -79,13 +81,15 @@ void Shader::setMat4(const char* name, const glm::mat4& matrix) {
 }
 
 void Shader::setInt(const char* name, GLint n) {
-    GLuint location = glGetUniformLocation(ID, name);
+    // Cache location
+    if (!locations.count(name)) {
+        locations.insert_or_assign(name, glGetUniformLocation(ID, name));
+    }
+
+    GLuint location = locations.at(name);
 
     // Check if get uniform failed
-    GLint currentProgram = 0;
-    glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
-
-    if (currentProgram != ID || location == -1) {
+    if (location == -1) {
         std::cout << "ERROR::SHADER::GET_UNIFORM_FAILED (" << name << ")\n";
         return;
     }

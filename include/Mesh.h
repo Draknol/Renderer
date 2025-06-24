@@ -7,8 +7,6 @@
 
 #include <vector>
 
-//static const glm::mat4 DEFAULT_TRANSFORM(1.0f);
-
 /// @brief Stores a mesh with vertices, indicies and textures
 class Mesh {
 private:
@@ -17,8 +15,6 @@ private:
     std::vector<Texture> textures;
 
     GLuint VAO, VBO, EBO;
-
-    //glm::mat4 worldTransform = DEFAULT_TRANSFORM;
 
 public:
 
@@ -30,7 +26,6 @@ public:
 
     GLuint getVAO() const { return VAO; }
     const Texture& getTexture(GLsizei i) const { return textures.at(i); }
-    //const glm::mat4& getWorldTransform() const { return worldTransform; }
     GLsizei getVertexCount() const { return indices.size(); }
     GLsizei getTextureCount() const { return textures.size(); }
 };
