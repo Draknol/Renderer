@@ -2,8 +2,8 @@
 
 //#include <glm/gtc/matrix_transform.hpp>
 
-Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices, const std::vector<Texture>& textures)
-    : vertices(vertices), indices(indices), textures(textures) {
+Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices, const std::vector<Texture>& textures, const glm::vec3& ambient, GLfloat shininess)
+    : vertices(vertices), indices(indices), textures(textures), ambient(ambient), shininess(shininess) {
     // VAO
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
@@ -22,8 +22,8 @@ Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>&
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), Vertex::offsetPos());
     glEnableVertexAttribArray(0);
 
-    // Color
-    glVertexAttribPointer(1, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), Vertex::offsetColor());
+    // Normal
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), Vertex::offsetNormal());
     glEnableVertexAttribArray(1);
 
     // Texture Coord

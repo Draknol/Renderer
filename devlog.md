@@ -113,3 +113,11 @@ Instances each have their own `worldTransform`, but also share a `localTransform
 I also added a cache to the `Shader` class to store uniform locations as the CPU was spending a lot of time asking for them. This reduced CPU usage (for 1m cubes) from 10% down to <1%.
 ### goal:
 The next feature to add is Phong lighting.
+## Version 0.2.1
+![Donut model](screenshots/Lighting%20Donut.gif)
+### description:
+There is now basic lighting with specular. Material properties (ambient, specular and shininess) are loaded from the .mtl file. I am currently doing a lot of the calculations that only need to be done per instance, per vertex. I'm not sure if it's worth moving them to the CPU but it is something I would like to look into.
+Understanding why the diffuse works is fairly intuitive to me but I'm not sure I fully understand the effect of shininess just yet and will need to have a look for a more detailed explaination of how the `pow` effects the final result.
+
+### goal:
+Next on the list is adding multiple types of lights (directional, point and spotlight).

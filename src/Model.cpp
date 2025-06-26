@@ -80,12 +80,16 @@ Mesh Model::processMesh(aiMesh* mesh, aiMaterial** materials) {
         aiVector3D vec3D = mesh->mVertices[i];
         glm::vec3 position(vec3D.x, vec3D.y, vec3D.z);
 
+        // Normal
+        vec3D = mesh->mNormals[i];
+        glm::vec3 normal(vec3D.x, vec3D.y, vec3D.z);
+
         // Texture coords
         glm::vec2 textureCoords(0.0f);
         if (materials[0]) textureCoords = glm::vec2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
 
         // Add vertex
-        vertices.emplace_back(position, glm::u8vec4(0xFF), textureCoords);
+        vertices.emplace_back(position, normal, textureCoords);
     }
 
     // Indices
@@ -98,17 +102,32 @@ Mesh Model::processMesh(aiMesh* mesh, aiMaterial** materials) {
         }
     }
 
+    glm::vec3 ambient;
+    GLfloat shininess;
+
     // Materials
     std::vector<Texture> textures;
     if(mesh->mMaterialIndex >= 0) {
         aiMaterial* material = materials[mesh->mMaterialIndex];
 
         // Diffuse
-        std::vector<Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
+        std::vector<Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "diffuse");
         textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
+
+        // Specular
+        std::vector<Texture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "specular");
+        textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
+
+        // Ambient
+        aiColor3D ambientColor;
+        material->Get(AI_MATKEY_COLOR_AMBIENT, ambientColor);
+        ambient = glm::vec3(ambientColor.r, ambientColor.g, ambientColor.b);
+
+        // Shininess
+        material->Get(AI_MATKEY_SHININESS, shininess);
     }
 
-    return Mesh(vertices, indices, textures);
+    return Mesh(vertices, indices, textures, ambient, shininess);
 }
 
 std::vector<Texture> Model::loadMaterialTextures(aiMaterial *material, aiTextureType type, const std::string& typeName) {

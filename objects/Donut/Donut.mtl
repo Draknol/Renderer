@@ -2,31 +2,22 @@
 # www.blender.org
 
 newmtl Donut
-Ns 0.000000
-Ka 1.000000 1.000000 1.000000
-Ks 0.500000 0.500000 0.500000
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
+Ns 32.000000
+Ka 0.100000 0.100000 0.100000
 illum 2
-map_Kd DonutBase.png
+map_Kd DonutDiffuse.png
+map_Ks DonutSpecular.png
 
 newmtl Iceing
-Ns 381.512756
-Ka 1.000000 1.000000 1.000000
-Kd 0.162303 0.803020 0.059171
-Ks 0.500000 0.500000 0.500000
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-map_Kd iceing.png
+Ns 50.000000
+Ka 0.100000 0.100000 0.100000
+illum 2
+map_Kd IceingDiffuse.png
+map_Ks IceingSpecular.png
 
 newmtl Sprinkles
-Ns 346.875061
-Ka 1.000000 1.000000 1.000000
-Kd 0.930106 0.327778 0.149960
-Ks 0.500000 0.500000 0.500000
-Ke 0.000000 0.000000 0.000000
-Ni 1.500000
-d 1.000000
-map_Kd Sprinkles.png
+Ns 40.000000
+Ka 0.100000 0.100000 0.100000
+illum 3
+map_Kd SprinklesDiffuse.png
+map_Ks SprinklesSpecular.png

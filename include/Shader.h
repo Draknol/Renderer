@@ -17,7 +17,7 @@
 class Shader {
 private:
     GLuint ID;
-    std::unordered_map<const char*, GLuint> locations;
+    std::unordered_map<std::string, GLuint> locations;
 
     /// @brief Reads a shader file into a string
     /// @param fileName Path to the shader relative to the SHADER_PATH
@@ -51,6 +51,16 @@ public:
     /// @param name uniform name
     /// @param n int value to set
     void setInt(const char* name, GLint n);
+
+    /// @brief Set a vec3 uniform (call useProgram first)
+    /// @param name uniform name
+    /// @param vector vec3 value to set
+    void setVec3(const char* name, const glm::vec3& vector);
+
+    /// @brief Set a float uniform (call useProgram first)
+    /// @param name uniform name
+    /// @param n float value to set
+    void setFloat(const char* name, GLfloat n);
 };
 
 #endif

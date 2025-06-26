@@ -27,16 +27,16 @@ int main() {
     glfwSwapInterval(0);
 
     // Set clear color
-    glClearColor(0.5f, 0.65f, 0.85f, 1.0f);
+    glClearColor(0.1f, 0.1f, 0.1f, 0.1f);
 
     // Load Model
-    Model model("Cube/Cube.obj", 1000000);
-    model.scale(glm::vec3(0.1f), -1);
+    Model model("Donut/Donut.obj");
+    
 
     // Create Shader
     Shader shader("vertexShader.vert", "fragmentShader.frag");
     window.useProgram(shader.getID());
-
+    shader.setVec3("lightPos", glm::vec3(5.0f, 5.0f, 0.0f));
 
     // Enable depth testing
     glEnable(GL_DEPTH_TEST);
@@ -47,17 +47,6 @@ int main() {
     GLfloat lastFrame = glfwGetTime();
     GLfloat frameTime = 0;
     GLint FPS = 0;
-
-    int counter = 0;
-    for (int x = 0; x < 100; ++x) {
-        for (int y = 0; y < 100; ++y) {
-            for (int z = 0; z < 100; ++z) {
-                model.translate(glm::vec3(0.4*x, 0.4*y, 0.4*z), counter);
-                model.rotate(glm::radians(3.6f * counter), glm::vec3(1.0f, 0.5f, 0.5f), counter);
-                counter++;
-            }
-        }
-    }
 
     // Main loop
     while (!window.shouldClose()) {
@@ -76,7 +65,7 @@ int main() {
 
         window.updateView();
         
-        model.rotate(glm::radians(90.0f * deltaTime), glm::vec3(1.0f, 0.5f, 0.5f), -1);
+        model.rotate(glm::radians(90.0f * deltaTime), glm::vec3(0.0f, 1.0f, 0.0f));
 
         window.draw(model, shader);
 

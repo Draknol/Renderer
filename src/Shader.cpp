@@ -96,3 +96,37 @@ void Shader::setInt(const char* name, GLint n) {
 
     glUniform1i(location, n);
 }
+
+void Shader::setVec3(const char* name, const glm::vec3& vector) {
+    // Cache location
+    if (!locations.count(name)) {
+        locations.insert_or_assign(name, glGetUniformLocation(ID, name));
+    }
+
+    GLuint location = locations.at(name);
+
+    // Check if get uniform failed
+    if (location == -1) {
+        std::cout << "ERROR::SHADER::GET_UNIFORM_FAILED (" << name << ")\n";
+        return;
+    }
+
+    glUniform3fv(location, 1, &vector.x);
+}
+
+void Shader::setFloat(const char* name, GLfloat n) {
+    // Cache location
+    if (!locations.count(name)) {
+        locations.insert_or_assign(name, glGetUniformLocation(ID, name));
+    }
+
+    GLuint location = locations.at(name);
+
+    // Check if get uniform failed
+    if (location == -1) {
+        std::cout << "ERROR::SHADER::GET_UNIFORM_FAILED (" << name << ")\n";
+        return;
+    }
+
+    glUniform1f(location, n);
+}

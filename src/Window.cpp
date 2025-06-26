@@ -10,8 +10,10 @@ Window::Window(GLsizei width, GLsizei height)
     window = glfwCreateWindow(width, height, "Renderer", NULL, NULL);
 
     //
-    lastMousePosition.x = width / 2;
-    lastMousePosition.y = height / 2;
+    double mousex, mousey;
+    glfwGetCursorPos(window, &mousex, &mousey);
+    lastMousePosition.x = mousex;
+    lastMousePosition.y = mousey;
 
     // Check window was created
     if (!window) {
@@ -41,18 +43,20 @@ void Window::draw(Model& model, Shader& shader) {
         const Mesh& mesh = model.getMesh(i);
 
         GLsizei diffuseNr = 1;
+        GLsizei specularNr = 1;
 
-        for(GLsizei i = 0; i < mesh.getTextureCount(); i++) {
+        for (int i = 0; i < mesh.getTextureCount(); i++) {
             // Activate Ith texture
             glActiveTexture(GL_TEXTURE0 + i);
 
-            // retrieve texture number (the N in diffuse_textureN)
+            // retrieve texture number
             std::string number;
             std::string name = mesh.getTexture(i).getType();
 
-            // Diffuse
-            if(name == "texture_diffuse") {
+            if (name == "diffuse") {
                 number = std::to_string(diffuseNr++);
+            } else if (name == "specular") {
+                number = std::to_string(specularNr++);
             }
 
             shader.setInt(("material." + name + number).c_str(), i);
@@ -68,6 +72,9 @@ void Window::draw(Model& model, Shader& shader) {
         // Update uniforms
         shader.setMat4("projView", view.getProjView());
         shader.setMat4("localTransform", model.getLocalTransform());
+        shader.setVec3("viewPos", view.getPosition());
+        shader.setVec3("material.ambient", mesh.getAmbient());
+        shader.setFloat("material.shininess", mesh.getshininess());
 
         // Draw vertices
         glDrawElementsInstanced(GL_TRIANGLES, mesh.getVertexCount(), GL_UNSIGNED_INT, 0, model.getInstanceCount());

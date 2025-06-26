@@ -26,7 +26,7 @@ private:
     
     GLuint instanceVBO;
     glm::mat4 localTransform = DEFAULT_TRANSFORM;
-    GLboolean transformsUpdated = false;
+    GLboolean transformsUpdated = true;
 
     /// @brief Process a node and all it's children recursivly
     /// @param node Node to process
@@ -78,7 +78,7 @@ public:
     const Mesh& getMesh(GLsizei i) const { return meshes.at(i); }
     GLsizei getMeshCount() const { return meshes.size(); }
     const glm::mat4& getLocalTransform() const { return localTransform; }
-    const std::vector<glm::mat4>& getinstanceTransforms() const {return instanceTransforms; }
+    const std::vector<glm::mat4>& getInstanceTransforms() const {return instanceTransforms; }
     const GLsizei getInstanceCount() const { return instanceTransforms.size(); }
 
 };

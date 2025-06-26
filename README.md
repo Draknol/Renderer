@@ -1,11 +1,11 @@
 # Renderer
 A simple 3D renderer made using OpenGL
 
-![Spinning donuts preview](screenshots/Spinning%20Donuts.gif)
+![Spinning donuts preview](screenshots/Lighting%20Donut.gif)
 
 ## Description
 
-This is a small project with which I'm aiming towards making a 3D renderer able to load and render .obj (or equivalent) files.
+This is a small project where I'm aiming to making a 3D renderer able to load and render .obj (or equivalent) files.
 I am currently following [learnopengl.com](https://learnopengl.com) but would like to branch off eventually.
 My eventual goal is to implement features including a moveable camera, lighting, post processing effects and hopefully much more.
 
@@ -26,6 +26,7 @@ My eventual goal is to implement features including a moveable camera, lighting,
 - GLSL shader file loading
 - Texture loading (using stb_image.h)
 - Model loading (using assimp)
+- Phong lighting
 - Instancing support
 - 3D transformation with scaling, rotation, and translation
 - Back face culling

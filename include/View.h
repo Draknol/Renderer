@@ -40,6 +40,7 @@ public:
     void rotate(float yawOffset, float pitchOffset);
 
     const glm::mat4& getProjView() { return projView; }
+    const glm::vec3& getPosition() { return position; }
 };
 
 #endif
