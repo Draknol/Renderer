@@ -40,6 +40,7 @@ GLuint Shader::loadShader(const std::string& fileName, GLenum shaderType) {
     // Check if file failed to open
     if (!file.is_open()) {
         std::cout << "ERROR::SHADER::FILE_OPEN_FAILED (" << SHADER_PATH + fileName << ")\n";
+        exit(1);
     }
 
     std::stringstream ssBuffer;
@@ -58,6 +59,7 @@ GLuint Shader::loadShader(const std::string& fileName, GLenum shaderType) {
     if (!success) {
         glGetShaderInfoLog(shader, 512, NULL, infoLog);
         std::cout << "ERROR::SHADER::COMPILATION_FAILED\n" << infoLog << std::endl;
+        exit(1);
     }
 
     return shader;

@@ -121,3 +121,54 @@ Understanding why the diffuse works is fairly intuitive to me but I'm not sure I
 
 ### goal:
 Next on the list is adding multiple types of lights (directional, point and spotlight).
+## Version 0.2.2
+![Different lights](screenshots/Multiple%20Lights.gif)
+### description:
+Directional, point and spotlights are now added.
+Directional:
+```c++
+struct DirectionalLight {
+    vec3 direction;
+    vec3 color;
+};
+```
+Directional lights have only a direction and a color. This works like the light I had to start with, with the only difference being the `lightDir` is fixed instead of taking into account the locations of the light and fragment.
+
+Point:
+```c++
+struct PointLight {
+    vec3 position;
+    vec3 color;
+
+    float constant;
+    float linear;
+    float quadratic;
+};
+```
+
+The point lights have a position and 3 terms to determine the fade out of the light over distance. This works like the first light but now with an attenuation, causing it to be brighter closer.
+This decay is calculated with:
+```c++
+1.0 / (light.constant + light.linear * dist + light.quadratic * dist * dist)
+```
+The constant, linear and quadratic terms controling the rate of decay with respect to distance.
+
+Spotlight:
+```c++
+struct Spotlight {
+    vec3 position;
+    vec3 direction;
+    vec3 color;
+
+    float cutOff;
+    float constant;
+    float linear;
+    float quadratic;
+};
+```
+
+Spotlight is similar to point light but with a direction and cut off angle. The direction is used to calculate the angle between the light and the fragment which is then compared with the cut off. For now anything beyond the cut off is 0 and anything inside is 1 but ideally I would add a fade to smoothen the edge out which is on the to do list.
+
+I've also added support for multiple lights. Currently the number of point/spotlights is constant which wouldn't be ideal in practice but it works for the sake of learning lighting. Apparently there are better options for having variable light counts in later versions of openGL which I might look into in a future project.
+### goal:
+My next goal is to update the lighting to Blinn-Phong lighting. I imagine this will be more a matter of learning how it works as opposed to being particularly hard to add as a feature.

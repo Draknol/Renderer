@@ -27,6 +27,8 @@ My eventual goal is to implement features including a moveable camera, lighting,
 - Texture loading (using stb_image.h)
 - Model loading (using assimp)
 - Phong lighting
+- Directional, point and spotlights
+- Multiple lights
 - Instancing support
 - 3D transformation with scaling, rotation, and translation
 - Back face culling
