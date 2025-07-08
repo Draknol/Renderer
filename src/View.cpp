@@ -51,3 +51,7 @@ void View::rotate(float yawOffset, float pitchOffset) {
 
     pitch = std::clamp(pitch, -89.0f, 89.0f);
 }
+
+void View::multiplySpeed(float multiple) {
+    cameraSpeed = std::clamp(cameraSpeed * multiple, minSpeed, maxSpeed);
+}

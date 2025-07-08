@@ -50,6 +50,9 @@ protected:
 
     /// @brief Callback for moving the mouse to update the view
     static void mouseMoved(GLFWwindow* window, double xpos, double ypos);
+
+    /// @brief Callback for scrolling the scroll wheel to update camera speed
+    static void scrolled(GLFWwindow* window, double xoffset, double yoffset);
 };
 
 #endif

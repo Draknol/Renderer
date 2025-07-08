@@ -16,7 +16,7 @@ My eventual goal is to implement features including a moveable camera, lighting,
 3. Clone the repository: `git clone https://github.com/Draknol/Renderer`
 4. Inside a build directory run: `cmake ..` (Change `SHADER_PATH` and `MODEL_PATH` if not running from project root)
 5. To build: `cmake --build .`
-6. To run: ./renderer
+6. To run: `./renderer`
 
 ## Features
 
@@ -26,7 +26,7 @@ My eventual goal is to implement features including a moveable camera, lighting,
 - GLSL shader file loading
 - Texture loading (using stb_image.h)
 - Model loading (using assimp)
-- Phong lighting
+- Blinn-Phong lighting
 - Directional, point and spotlights
 - Multiple lights
 - Instancing support

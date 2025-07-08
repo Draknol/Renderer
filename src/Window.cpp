@@ -31,7 +31,8 @@ Window::Window(GLsizei width, GLsizei height)
     // Set callback functions
     glfwSetWindowUserPointer(window, this);
     glfwSetFramebufferSizeCallback(window, Window::windowResized);
-    glfwSetCursorPosCallback(window, Window::mouseMoved); 
+    glfwSetCursorPosCallback(window, Window::mouseMoved);
+    glfwSetScrollCallback(window, Window::scrolled);
 }
 
 Window::~Window() {
@@ -110,6 +111,12 @@ void Window::mouseMoved(GLFWwindow* window, double xpos, double ypos) {
     yoffset *= sensitivity;
 
     win->view.rotate(xoffset, yoffset);
+}
+
+void Window::scrolled(GLFWwindow* window, double xoffset, double yoffset) {
+    Window* win = (Window*)glfwGetWindowUserPointer(window);
+    std::cout << xoffset << " " << yoffset << std::endl;
+    win->view.multiplySpeed(std::powf(1.1f, yoffset));
 }
 
 void Window::useProgram(GLuint ID) {

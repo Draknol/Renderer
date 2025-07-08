@@ -9,14 +9,14 @@ map_Kd DonutDiffuse.png
 map_Ks DonutSpecular.png
 
 newmtl Iceing
-Ns 50.000000
+Ns 200.000000
 Ka 0.100000 0.100000 0.100000
 illum 2
 map_Kd IceingDiffuse.png
 map_Ks IceingSpecular.png
 
 newmtl Sprinkles
-Ns 40.000000
+Ns 50.000000
 Ka 0.100000 0.100000 0.100000
 illum 3
 map_Kd SprinklesDiffuse.png

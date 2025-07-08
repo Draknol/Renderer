@@ -33,6 +33,10 @@ int main() {
     Model cube("Cube/Cube.obj", 50);
     cube.scale(glm::vec3(0.2));
 
+    Model floor("Floor/Floor.obj");
+    floor.scale(glm::vec3(7, 0.1, 7));
+    floor.translate(glm::vec3(0.65, -3, 0.65));
+
     Model donut("Donut/Donut.obj", 50);
     donut.translate(glm::vec3(0.0f, -0.2f, 0.0f));
     donut.scale(glm::vec3(0.7));
@@ -51,19 +55,19 @@ int main() {
     shader.setVec3("directionalLight.color", glm::vec3(0.3f, 0.3f, 0.3f)); 
 
     // Point
-    shader.setVec3("pointLights[0].position", glm::vec3(10.0f, 1.0f, 0.0f));
+    shader.setVec3("pointLights[0].position", glm::vec3(9.0f, 1.0f, 0.0f));
     shader.setVec3("pointLights[0].color", glm::vec3(1.0f, 0.0f, 0.0f));
     shader.setFloat("pointLights[0].constant", 1.0f);
     shader.setFloat("pointLights[0].linear", 0.35f);
     shader.setFloat("pointLights[0].quadratic", 0.44f);
 
-    shader.setVec3("pointLights[1].position", glm::vec3(10.0f, 1.0f, 10.0f));
+    shader.setVec3("pointLights[1].position", glm::vec3(9.0f, 1.0f, 9.0f));
     shader.setVec3("pointLights[1].color", glm::vec3(0.0f, 1.0f, 0.0f)); 
     shader.setFloat("pointLights[1].constant", 1.0f);
     shader.setFloat("pointLights[1].linear", 0.35f);
     shader.setFloat("pointLights[1].quadratic", 0.44f);
 
-    shader.setVec3("pointLights[2].position", glm::vec3(0.0f, 1.0f, 10.0f));
+    shader.setVec3("pointLights[2].position", glm::vec3(0.0f, 1.0f, 9.0f));
     shader.setVec3("pointLights[2].color", glm::vec3(0.0f, 0.0f, 1.0f)); 
     shader.setFloat("pointLights[2].constant", 1.0f);
     shader.setFloat("pointLights[2].linear", 0.35f);
@@ -140,6 +144,7 @@ int main() {
 
         window.draw(cube, shader);
         window.draw(donut, shader);
+        window.draw(floor, shader);
 
         window.update();
 

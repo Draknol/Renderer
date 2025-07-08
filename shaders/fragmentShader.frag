@@ -56,7 +56,7 @@ void main() {
     vec3 norm = normalize(Normal);
     vec3 viewDir = normalize(viewPos - FragPos);
 
-    vec3 lighting = 0 * calcDirLight(directionalLight, norm, viewDir);
+    vec3 lighting = calcDirLight(directionalLight, norm, viewDir);
 
     for (uint i = 0u; i < POINTLIGHTCOUNT; i++) {
         lighting += calcPointLight(pointLights[i], norm, viewDir);
@@ -79,9 +79,9 @@ vec3 calcDirLight(DirectionalLight light, vec3 norm, vec3 viewDir) {
     vec3 diffuse = max(dot(norm, lightDir), 0.0) * light.color;
 
     // Specular
-    vec3 reflectDir = reflect(-lightDir, norm);
-    float shininess = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-    vec3 specular = texture(material.specular1, TexCoord).rgb * shininess;
+    vec3 halfwayDir = normalize(lightDir + viewDir);
+    float shininess = pow(max(dot(norm, halfwayDir), 0.0), material.shininess);
+    vec3 specular = texture(material.specular1, TexCoord).rgb * shininess * light.color;
 
     return texture(material.diffuse1, TexCoord).rgb * (ambient + diffuse + specular);
 }
@@ -100,9 +100,9 @@ vec3 calcPointLight(PointLight light, vec3 norm, vec3 viewDir) {
     vec3 diffuse = max(dot(norm, lightDir), 0.0) * light.color * attenuation;
 
     // Specular
-    vec3 reflectDir = reflect(-lightDir, norm);
-    float shininess = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-    vec3 specular = texture(material.specular1, TexCoord).rgb * shininess * attenuation;
+    vec3 halfwayDir = normalize(lightDir + viewDir);
+    float shininess = pow(max(dot(norm, halfwayDir), 0.0), material.shininess);
+    vec3 specular = texture(material.specular1, TexCoord).rgb * shininess * attenuation * light.color;
 
     return texture(material.diffuse1, TexCoord).rgb * (ambient + diffuse + specular);
 }
@@ -127,9 +127,9 @@ vec3 calcSpotLight(Spotlight light) {
 
         // Specular
         vec3 viewDir = normalize(viewPos - FragPos);
-        vec3 reflectDir = reflect(-lightDir, norm);
-        float shininess = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-        vec3 specular = texture(material.specular1, TexCoord).rgb * shininess * attenuation;
+        vec3 halfwayDir = normalize(lightDir + viewDir);
+        float shininess = pow(max(dot(norm, halfwayDir), 0.0), material.shininess);
+        vec3 specular = texture(material.specular1, TexCoord).rgb * shininess * attenuation * light.color;
 
         return texture(material.diffuse1, TexCoord).rgb * (ambient + diffuse + specular);
     }

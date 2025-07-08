@@ -172,3 +172,10 @@ Spotlight is similar to point light but with a direction and cut off angle. The 
 I've also added support for multiple lights. Currently the number of point/spotlights is constant which wouldn't be ideal in practice but it works for the sake of learning lighting. Apparently there are better options for having variable light counts in later versions of openGL which I might look into in a future project.
 ### goal:
 My next goal is to update the lighting to Blinn-Phong lighting. I imagine this will be more a matter of learning how it works as opposed to being particularly hard to add as a feature.
+## Version 0.2.3
+![]()
+### description:
+I've updated the lighting to Blinn-Phong which used the halfway vector between the light and the view instead of the reflection direction. In theory this is faster but as I am currently recalculating it for every fragment (not ideal but good enough for what I'm doing) it would likely be slightly slower. The other benefit is that it produces better results with low shininesses where Phong lighting can cut off part of the specular lighting.
+Since this was a fairly quick addition I also made the scroll wheel adjust the camera speed, which I've been meaning to add for a while.
+### goal:
+The next and likely final (at least for now) goal is to add shadows.

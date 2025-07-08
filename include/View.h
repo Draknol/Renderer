@@ -19,7 +19,9 @@ private:
     glm::vec3 forward = glm::vec3(0.0f, 0.0f, -1.0f);
     constexpr static glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
 
-    float cameraSpeed = 15.0f;
+    float cameraSpeed = 16.0f;
+    float minSpeed = 1.0f;
+    float maxSpeed = 64.0f;
     float fov = 90.0f;
 public:
 
@@ -38,6 +40,8 @@ public:
     void move(float cameraSpeed, int direction);
 
     void rotate(float yawOffset, float pitchOffset);
+
+    void multiplySpeed(float multiple);
 
     const glm::mat4& getProjView() { return projView; }
     const glm::vec3& getPosition() { return position; }
