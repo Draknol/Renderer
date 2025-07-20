@@ -11,9 +11,8 @@ View::View(float width, float height) {
 }
 
 void View::updateViewPort(float width, float height) {
-    aspectRatio = width / height;
     glViewport(0, 0, width, height);
-    projection = glm::perspective(glm::radians(fov), aspectRatio, 0.1f, 100.0f);
+    projection = glm::perspective(glm::radians(fov), width / height, 0.1f, 100.0f);
     projView = projection * view;
 }
 

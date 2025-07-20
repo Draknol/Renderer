@@ -1,21 +1,21 @@
-# Blender 4.4.3 MTL File: 'JustDonut.blend'
+ # Blender 4.4.3 MTL File: 'JustDonut.blend'
 # www.blender.org
 
-newmtl Donut
+newmtl Material.002
 Ns 32.000000
 Ka 0.100000 0.100000 0.100000
 illum 2
 map_Kd DonutDiffuse.png
 map_Ks DonutSpecular.png
 
-newmtl Iceing
+newmtl Material.001
 Ns 200.000000
 Ka 0.100000 0.100000 0.100000
 illum 2
 map_Kd IceingDiffuse.png
 map_Ks IceingSpecular.png
 
-newmtl Sprinkles
+newmtl Material.004
 Ns 50.000000
 Ka 0.100000 0.100000 0.100000
 illum 3

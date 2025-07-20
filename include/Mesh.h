@@ -13,6 +13,7 @@ private:
     std::vector<Vertex> vertices;
     std::vector<GLuint> indices;
     std::vector<Texture> textures;
+    
     glm::vec3 ambient;
     GLfloat shininess;
 

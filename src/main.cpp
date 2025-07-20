@@ -1,13 +1,16 @@
 #include <Window.h>
 #include <Shader.h>
 #include <Texture.h>
+#include <LightManager.h>
 
 #include <glm/trigonometric.hpp>
 
-#include <iostream>
+#include <glm/mat4x4.hpp>
 
-const GLsizei SCREEN_WIDTH = 800;
-const GLsizei SCREEN_HEIGHT = 800;
+#include <GLFW/glfw3.h>
+#include <glm/gtc/matrix_transform.hpp>
+
+#include <iostream>
 
 int main() {
 
@@ -18,9 +21,12 @@ int main() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_SAMPLES, 4);
 
-    Window window(SCREEN_WIDTH, SCREEN_HEIGHT);
+    // Create window
+    Window window(800, 800);
 
+    // Initialise glew
     glewInit();
 
     // Disable VSync
@@ -29,7 +35,7 @@ int main() {
     // Set clear color
     glClearColor(0.1f, 0.1f, 0.1f, 0.1f);
 
-    // Load Model
+    // Load and transform models
     Model cube("Cube/Cube.obj", 50);
     cube.scale(glm::vec3(0.2));
 
@@ -38,84 +44,54 @@ int main() {
     floor.translate(glm::vec3(0.65, -3, 0.65));
 
     Model donut("Donut/Donut.obj", 50);
-    donut.translate(glm::vec3(0.0f, -0.2f, 0.0f));
-    donut.scale(glm::vec3(0.7));
+    donut.translate(glm::vec3(0.0f, -0.24f, 0.0f));
+    donut.scale(glm::vec3(1.3));
 
+    // Transform instances to create a grid of them
     for (size_t i = 0; i < 50; i++) {
         cube.translate(glm::vec3((2*i) / 10, 0, (2*i) % 10), i);
-        donut.translate(glm::vec3((2*i+1) / 10, 0, (2*i+1) % 10), i);
+        donut.translate(glm::vec3((2*i) / 10, 0, (2*i+1) % 10), i);
     }
-    
-    // Create Shader
+
+    // Create shader for making shadowMaps
+    Shader depthShader("depthShader.vert", "depthShader.frag");
+    window.useProgram(depthShader.getID());
+
+    // Create shader for rendering
     Shader shader("vertexShader.vert", "fragmentShader.frag");
     window.useProgram(shader.getID());
 
-    // Directional
-    shader.setVec3("directionalLight.direction", glm::vec3(-0.2f, -0.3f, -0.3f));
-    shader.setVec3("directionalLight.color", glm::vec3(0.3f, 0.3f, 0.3f)); 
+    // Directional lights
+    std::vector<DirectionalLight> directionalLights = {
+        DirectionalLight(-7.0f, 7.0f, 7.0f, -7.0f, glm::vec3(8.0f, 4.0f, 10.0f), glm::vec3(-0.2f, -0.3f, -0.3f), glm::vec3(0.3f, 0.3f, 0.3f))
+    };
 
-    // Point
-    shader.setVec3("pointLights[0].position", glm::vec3(9.0f, 1.0f, 0.0f));
-    shader.setVec3("pointLights[0].color", glm::vec3(1.0f, 0.0f, 0.0f));
-    shader.setFloat("pointLights[0].constant", 1.0f);
-    shader.setFloat("pointLights[0].linear", 0.35f);
-    shader.setFloat("pointLights[0].quadratic", 0.44f);
+    // Point lights
+    std::vector<PointLight> pointLights = {
+        PointLight(1.0f, 0.35f, 0.44f, glm::vec3(9.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f)),
+        PointLight(1.0f, 0.35f, 0.44f, glm::vec3(9.0f, 1.0f, 9.0f), glm::vec3(0.0f, 1.0f, 0.0f)),
+        PointLight(1.0f, 0.35f, 0.44f, glm::vec3(0.0f, 1.0f, 9.0f), glm::vec3(0.0f, 0.0f, 1.0f)),
+        PointLight(1.0f, 0.35f, 0.44f, glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f)),
+    };
 
-    shader.setVec3("pointLights[1].position", glm::vec3(9.0f, 1.0f, 9.0f));
-    shader.setVec3("pointLights[1].color", glm::vec3(0.0f, 1.0f, 0.0f)); 
-    shader.setFloat("pointLights[1].constant", 1.0f);
-    shader.setFloat("pointLights[1].linear", 0.35f);
-    shader.setFloat("pointLights[1].quadratic", 0.44f);
+    // Spotlights
+    std::vector<Spotlight> spotLights = {
+        Spotlight(glm::radians(25.0f), 1.0f, 0.09f, 0.032f, glm::vec3(5.0f, 3.0f, 5.0f), glm::vec3(0.1f, -1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f)),
+        Spotlight(glm::radians(25.0f), 1.0f, 0.09f, 0.032f, glm::vec3(2.0f, 1.0f, 3.0f), glm::vec3(1.0f, -0.5f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f)),
+        Spotlight(glm::radians(25.0f), 1.0f, 0.09f, 0.032f, glm::vec3(8.0f, 1.0f, 7.0f), glm::vec3(-1.0f, -0.5f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f)),
+        Spotlight(glm::radians(25.0f), 1.0f, 0.09f, 0.032f, glm::vec3(2.0f, 3.0f, 5.0f), glm::vec3(-0.1f, -0.2f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f))
+    };
 
-    shader.setVec3("pointLights[2].position", glm::vec3(0.0f, 1.0f, 9.0f));
-    shader.setVec3("pointLights[2].color", glm::vec3(0.0f, 0.0f, 1.0f)); 
-    shader.setFloat("pointLights[2].constant", 1.0f);
-    shader.setFloat("pointLights[2].linear", 0.35f);
-    shader.setFloat("pointLights[2].quadratic", 0.44f);
-
-    shader.setVec3("pointLights[3].position", glm::vec3(0.0f, 1.0f, 0.0f));
-    shader.setVec3("pointLights[3].color", glm::vec3(1.0f, 0.0f, 1.0f)); 
-    shader.setFloat("pointLights[3].constant", 1.0f);
-    shader.setFloat("pointLights[3].linear", 0.35f);
-    shader.setFloat("pointLights[3].quadratic", 0.44f);
-
-    // Spotlight
-    shader.setVec3("spotlights[0].position",  glm::vec3(5.0f, 3.0f, 5.0f));
-    shader.setVec3("spotlights[0].direction", glm::vec3(0.0f, -0.2f, 0.0f));
-    shader.setVec3("spotlights[0].color", glm::vec3(1.0f, 1.0f, 1.0f));  
-    shader.setFloat("spotlights[0].cutOff",   glm::cos(glm::radians(12.5f)));
-    shader.setFloat("spotlights[0].constant", 1.0f);
-    shader.setFloat("spotlights[0].linear", 0.09f);
-    shader.setFloat("spotlights[0].quadratic", 0.032f);
-
-    shader.setVec3("spotlights[1].position",  glm::vec3(2.0f, 0.2f, 3.0f));
-    shader.setVec3("spotlights[1].direction", glm::vec3(1.0f, 0.1f, 0.0f));
-    shader.setVec3("spotlights[1].color", glm::vec3(1.0f, 1.0f, 1.0f));   
-    shader.setFloat("spotlights[1].cutOff",   glm::cos(glm::radians(12.5f)));
-    shader.setFloat("spotlights[1].constant", 1.0f);
-    shader.setFloat("spotlights[1].linear", 0.09f);
-    shader.setFloat("spotlights[1].quadratic", 0.032f);
-
-    shader.setVec3("spotlights[2].position",  glm::vec3(8.0f, 0.2f, 7.0f));
-    shader.setVec3("spotlights[2].direction", glm::vec3(-1.0f, -0.1f, 0.0f));
-    shader.setVec3("spotlights[2].color", glm::vec3(1.0f, 1.0f, 1.0f)); 
-    shader.setFloat("spotlights[2].cutOff",   glm::cos(glm::radians(12.5f)));
-    shader.setFloat("spotlights[2].constant", 1.0f);
-    shader.setFloat("spotlights[2].linear", 0.09f);
-    shader.setFloat("spotlights[2].quadratic", 0.032f);
-
-    shader.setVec3("spotlights[3].position",  glm::vec3(2.0f, 3.0f, 5.0f));
-    shader.setVec3("spotlights[3].direction", glm::vec3(0.0f, -0.2f, 0.0f));
-    shader.setVec3("spotlights[3].color", glm::vec3(1.0f, 1.0f, 1.0f));
-    shader.setFloat("spotlights[3].cutOff",   glm::cos(glm::radians(12.5f)));
-    shader.setFloat("spotlights[3].constant", 1.0f);
-    shader.setFloat("spotlights[3].linear", 0.09f);
-    shader.setFloat("spotlights[3].quadratic", 0.032f);
+    LightManager lights(directionalLights, pointLights, spotLights);
+    lights.updateUniforms(shader);
 
     // Enable depth testing
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
+
+    // MSAA
+    glEnable(GL_MULTISAMPLE);
     
     // FPS
     GLfloat lastFrame = glfwGetTime();
@@ -131,6 +107,30 @@ int main() {
 
         window.processInput(deltaTime);
 
+        cube.rotate(glm::radians(90.0f * deltaTime), glm::vec3(0.0f, 1.0f, 0.0f));
+        donut.rotate(glm::radians(90.0f * deltaTime), glm::vec3(0.0f, 1.0f, 0.0f));
+
+        // Update models
+        cube.updateTransforms();
+        donut.updateTransforms();
+        floor.updateTransforms();
+
+        // Set up shadow map
+        window.useProgram(depthShader.getID());
+
+        // Clear shadow buffer
+        lights.clear();
+
+        // Render shadows
+        lights.draw(cube, depthShader);
+        lights.draw(donut, depthShader);
+        lights.draw(floor, depthShader);
+
+        // Swap back to window
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glViewport(0, 0, window.getWidth(), window.getHeight());
+        glCullFace(GL_BACK);
+
         // Clear color buffer
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -138,9 +138,6 @@ int main() {
         window.useProgram(shader.getID());
 
         window.updateView();
-        
-        cube.rotate(glm::radians(90.0f * deltaTime), glm::vec3(0.0f, 1.0f, 0.0f));
-        donut.rotate(glm::radians(90.0f * deltaTime), glm::vec3(0.0f, 1.0f, 0.0f));
 
         window.draw(cube, shader);
         window.draw(donut, shader);

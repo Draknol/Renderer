@@ -12,7 +12,7 @@ Texture::Texture(const std::string& texturePath, const std::string& type)
 
 Texture::Texture(const Texture& other)
     : ID(other.ID), type(other.type), path(other.path), instanceCount(other.instanceCount) {
-    ++(*instanceCount);
+    (*instanceCount)++;
 }
 
 Texture& Texture::operator=(const Texture& other) {

@@ -24,6 +24,28 @@ Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath) {
         glGetProgramInfoLog(ID, 512, NULL, infoLog);
         std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
     }
+
+    GLint count;
+    glGetProgramiv(ID, GL_ACTIVE_UNIFORMS, &count);
+
+    char name[256]; // Increase size if needed
+    for (GLint i = 0; i < count; ++i) {
+        GLsizei length;
+        GLint size;
+        GLenum type;
+        glGetActiveUniform(ID, i, sizeof(name), &length, &size, &type, name);
+
+        std::string baseName(name);
+        if (size > 1) {
+            for (GLint j = 0; j < size; ++j) {
+                std::string elementName = baseName;
+                elementName = elementName.substr(0, elementName.size() - 3)  + "[" + std::to_string(j) + "]";
+                locations.insert_or_assign(elementName, glGetUniformLocation(ID, elementName.c_str()));
+            }
+        } else {
+            locations.insert_or_assign(baseName, glGetUniformLocation(ID, baseName.c_str()));
+        }
+    }
     
     // Delete shaders
     glDeleteShader(vertex);
@@ -65,70 +87,39 @@ GLuint Shader::loadShader(const std::string& fileName, GLenum shaderType) {
     return shader;
 }
 
-void Shader::setMat4(const char* name, const glm::mat4& matrix) {
-    // Cache location
-    if (!locations.count(name)) {
-        locations.insert_or_assign(name, glGetUniformLocation(ID, name));
+void Shader::setMat4(const std::string& name, const glm::mat4& matrix) {
+    try {
+        glUniformMatrix4fv(locations.at(name), 1, GL_FALSE, &matrix[0].x);
     }
-
-    GLuint location = locations.at(name);
-
-    // Check if get uniform failed
-    if (location == -1) {
-        std::cout << "ERROR::SHADER::GET_UNIFORM_FAILED (" << name << ")\n";
-        return;
+    catch(const std::exception& e) {
+        std::cout << "ERROR::SHADER::GET_UNIFORM_FAILED (" + name + ")\n";
     }
-
-    glUniformMatrix4fv(location, 1, GL_FALSE, &matrix[0].x);
+    
 }
 
-void Shader::setInt(const char* name, GLint n) {
-    // Cache location
-    if (!locations.count(name)) {
-        locations.insert_or_assign(name, glGetUniformLocation(ID, name));
+void Shader::setInt(const std::string& name, GLint n) {
+    try {
+        glUniform1i(locations.at(name), n);
     }
-
-    GLuint location = locations.at(name);
-
-    // Check if get uniform failed
-    if (location == -1) {
-        std::cout << "ERROR::SHADER::GET_UNIFORM_FAILED (" << name << ")\n";
-        return;
+    catch(const std::exception& e) {
+        std::cout << "ERROR::SHADER::GET_UNIFORM_FAILED (" + name + ")\n";
     }
-
-    glUniform1i(location, n);
 }
 
-void Shader::setVec3(const char* name, const glm::vec3& vector) {
-    // Cache location
-    if (!locations.count(name)) {
-        locations.insert_or_assign(name, glGetUniformLocation(ID, name));
+void Shader::setVec3(const std::string& name, const glm::vec3& vector) {
+    try {
+        glUniform3fv(locations.at(name), 1, &vector.x);
     }
-
-    GLuint location = locations.at(name);
-
-    // Check if get uniform failed
-    if (location == -1) {
-        std::cout << "ERROR::SHADER::GET_UNIFORM_FAILED (" << name << ")\n";
-        return;
+    catch(const std::exception& e) {
+        std::cout << "ERROR::SHADER::GET_UNIFORM_FAILED (" + name + ")\n";
     }
-
-    glUniform3fv(location, 1, &vector.x);
 }
 
-void Shader::setFloat(const char* name, GLfloat n) {
-    // Cache location
-    if (!locations.count(name)) {
-        locations.insert_or_assign(name, glGetUniformLocation(ID, name));
+void Shader::setFloat(const std::string& name, GLfloat n) {
+    try {
+        glUniform1f(locations.at(name), n);
     }
-
-    GLuint location = locations.at(name);
-
-    // Check if get uniform failed
-    if (location == -1) {
-        std::cout << "ERROR::SHADER::GET_UNIFORM_FAILED (" << name << ")\n";
-        return;
+    catch(const std::exception& e) {
+        std::cout << "ERROR::SHADER::GET_UNIFORM_FAILED (" + name + ")\n";
     }
-
-    glUniform1f(location, n);
 }

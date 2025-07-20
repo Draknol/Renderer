@@ -11,13 +11,13 @@ class Window
 {
 private:
     GLFWwindow* window;
-    View view;
 
     GLint currentProgram;
     GLsizei width, height;
 
     glm::vec2 lastMousePosition;
 public:
+    View view;
 
     /// @brief Create and initialise a window
     Window(GLsizei width, GLsizei height);
@@ -42,6 +42,9 @@ public:
     void update();
 
     void updateView();
+
+    GLsizei getWidth() const { return width; }
+    GLsizei getHeight() const { return height; }
 
 protected:
 

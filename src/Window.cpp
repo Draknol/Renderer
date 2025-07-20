@@ -40,6 +40,15 @@ Window::~Window() {
 }
 
 void Window::draw(Model& model, Shader& shader) {
+
+    // Update uniforms
+    static const std::string projView = "projView";
+    shader.setMat4(projView, view.getProjView());
+    static const std::string viewPos = "viewPos";
+    shader.setVec3(viewPos, view.getPosition());
+
+    
+    std::string number;
     for (GLsizei i = 0; i < model.getMeshCount(); i++) {
         const Mesh& mesh = model.getMesh(i);
 
@@ -51,31 +60,29 @@ void Window::draw(Model& model, Shader& shader) {
             glActiveTexture(GL_TEXTURE0 + i);
 
             // retrieve texture number
-            std::string number;
-            std::string name = mesh.getTexture(i).getType();
+            const std::string& name = mesh.getTexture(i).getType();
 
             if (name == "diffuse") {
-                number = std::to_string(diffuseNr++);
+                static const std::string matDiff = "material.diffuse";
+                shader.setInt(matDiff, i);
             } else if (name == "specular") {
-                number = std::to_string(specularNr++);
+                static const std::string matSpec = "material.specular";
+                shader.setInt(matSpec, i);
             }
 
-            shader.setInt(("material." + name + number).c_str(), i);
             glBindTexture(GL_TEXTURE_2D, mesh.getTexture(i).getID());
         }
 
         // Bind VAO
         glBindVertexArray(mesh.getVAO());
-
-        // Update transforms
-        model.updateTransforms();
         
         // Update uniforms
-        shader.setMat4("projView", view.getProjView());
-        shader.setMat4("localTransform", model.getLocalTransform());
-        shader.setVec3("viewPos", view.getPosition());
-        shader.setVec3("material.ambient", mesh.getAmbient());
-        shader.setFloat("material.shininess", mesh.getshininess());
+        static const std::string locTrans = "localTransform";
+        shader.setMat4(locTrans, model.getLocalTransform());
+        static const std::string matAmb = "material.ambient";
+        shader.setVec3(matAmb, mesh.getAmbient());
+        static const std::string matShin = "material.shininess";
+        shader.setFloat(matShin, mesh.getshininess());
 
         // Draw vertices
         glDrawElementsInstanced(GL_TRIANGLES, mesh.getVertexCount(), GL_UNSIGNED_INT, 0, model.getInstanceCount());

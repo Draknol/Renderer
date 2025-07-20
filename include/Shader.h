@@ -43,24 +43,16 @@ public:
     GLuint getID() const { return ID; }
 
     /// @brief Set a 4x4 matrix uniform (call useProgram first)
-    /// @param name uniform name
-    /// @param matrix matrix value to set
-    void setMat4(const char* name, const glm::mat4& matrix);
+    void setMat4(const std::string& name, const glm::mat4& matrix);
 
     /// @brief Set a int uniform (call useProgram first)
-    /// @param name uniform name
-    /// @param n int value to set
-    void setInt(const char* name, GLint n);
+    void setInt(const std::string& name, GLint n);
 
     /// @brief Set a vec3 uniform (call useProgram first)
-    /// @param name uniform name
-    /// @param vector vec3 value to set
-    void setVec3(const char* name, const glm::vec3& vector);
+    void setVec3(const std::string& name, const glm::vec3& vector);
 
     /// @brief Set a float uniform (call useProgram first)
-    /// @param name uniform name
-    /// @param n float value to set
-    void setFloat(const char* name, GLfloat n);
+    void setFloat(const std::string& name, GLfloat n);
 };
 
 #endif

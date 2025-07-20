@@ -173,9 +173,19 @@ I've also added support for multiple lights. Currently the number of point/spotl
 ### goal:
 My next goal is to update the lighting to Blinn-Phong lighting. I imagine this will be more a matter of learning how it works as opposed to being particularly hard to add as a feature.
 ## Version 0.2.3
-![]()
 ### description:
 I've updated the lighting to Blinn-Phong which used the halfway vector between the light and the view instead of the reflection direction. In theory this is faster but as I am currently recalculating it for every fragment (not ideal but good enough for what I'm doing) it would likely be slightly slower. The other benefit is that it produces better results with low shininesses where Phong lighting can cut off part of the specular lighting.
 Since this was a fairly quick addition I also made the scroll wheel adjust the camera speed, which I've been meaning to add for a while.
 ### goal:
 The next and likely final (at least for now) goal is to add shadows.
+## Version 1.0.0
+![Shadows](screenshots/Shadows.png)
+### description:
+Shadows were definitely the most challenging addition by far. I started with the directional lights and after many failed attempts got the shadow map rendering correctly.
+When rendering shadow maps since the light is at an angle to the surface only some of the shadow is visible. This is called shadow acne and it makes the shadows render in stripes.
+To fix this I needed to add a bias, based on the angle, to move the shadow map to ensure the whole shadow is above the surface. This however has 2 side-effects, objects close together can end up self shadowing and there can be a gap (peter-panning) between the shadow and the object. The solution to peter-panning is to cull the front faces instead of the back faces. It took a lot of trial and error, adjusting values and updating the donut mesh to not have as much overlapping geometry, to get a result I was reasonably happy with.
+After tidying up my directional light implementation, adding spotlights wasn't much different. I quickly noticed a massive drop in performance compared to before. I eventually found it was due to effectively rendering 50 fairly high poly donut meshes 6 times (1 directional, 4 spotlight and 1 to window) which is around 23m vertices being rendered. While I'm sure there is a nice way to avoid this, I opted for reducing the vertex count of the donuts which increased performance by roughly 10x.
+For the point lights I opted to not add shadows as while it would be better I'm content for now with having directional and spotlight shadows and pointlights unshadowed.
+I also added MSAA to reduce aliasing and PFC to the shadows, which effectively blurs the shadows by averaging the surrounding pixels to remove the sharp edges caused by the pixels of the shadow map.
+### future plans:
+I am happy with where this project is for now and plan to move onto something else now. I have definitely learnt a lot about OpenGL and rendering in general. Going forward I'd like to have a go at making something with voxels or marching cubes, maybe some terrain generation. I'm looking forward to applying my new knowledge to a project and seeing what I can make.
